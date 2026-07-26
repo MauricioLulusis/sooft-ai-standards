@@ -39,7 +39,7 @@ La seguridad en SOOFT no vive en un único lugar: está distribuida **a propósi
 
 ### Dependencias
 - **Prohibido** introducir dependencias externas no aprobadas por el equipo de seguridad
-- Toda dependencia nueva debe ser justificada y revisada antes de mersooft
+- Toda dependencia nueva debe ser justificada y revisada antes de mergear
 - No actualizar dependencias con vulnerabilidades conocidas sin evaluar el impacto
 
 ### Comandos destructivos
@@ -57,7 +57,7 @@ La seguridad en SOOFT no vive en un único lugar: está distribuida **a propósi
 - Aplicar principio de menor privilegio
 
 ### En cambios de autenticación/autorización
-- Requiere revisión de Ciberseguridad antes de mersooft
+- Requiere revisión de Ciberseguridad antes de mergear
 - Documentar el cambio en el ADR correspondiente
 - Incluir casos de prueba para los nuevos flujos de auth
 

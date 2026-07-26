@@ -176,7 +176,7 @@ El orquestador decide la transición de estado, registra evidencia y emite la fr
 1. **Gate-driven** — no avanzás en un punto crítico sin aprobación explícita del developer.
 2. **PRD colaborativo** — el scope se afina con un ida y vuelta breve antes de cerrarlo.
 3. **Spec cuando importa** — SPEC técnica solo para cambios complejos o riesgosos; lo simple va directo al plan.
-4. **Artefactos por tipo** — el trabajo deja rastro en `docs/feats/`, `docs/bugs/` o `docs/security/`.
+4. **Artefactos por tipo** — el trabajo deja rastro en `docs/feats/`, `docs/bugs/`, `docs/security/` o `docs/incidents/`.
 5. **Worktree-first** — trabajás en `.worktrees/{tipo}-{slug}` aislado, nunca sobre la rama compartida.
 6. **Nombres tipo Git** — los tipos de trabajo son `feat`, `fix`, `hot-fix`, `chore`, `security`.
 7. **Tool-agnostic** — las herramientas de Sooft se detectan o configuran por proyecto; no asumís proveedores.
@@ -317,7 +317,7 @@ Política completa en `assets/policies/testing-guidelines.md`. Ante cualquier ca
 - OBLIGATORIO usar solo frameworks/librerías del catálogo aprobado por Arquitectura. Fuera del catálogo → marcar la tarea BLOCKED y documentar.
 
 ### §6.4 Trazabilidad del código IA
-- OBLIGATORIO marcar todo código generado: `// [IA-generated] SOOFT — revisar antes de mersooft. Ticket: <TICKET-XXXXX>` (ajustá el comentario al lenguaje: `//` Java/JS/TS/C#, `#` Python).
+- OBLIGATORIO marcar todo código generado: `// [IA-generated] SOOFT — revisar antes de mergear. Ticket: <TICKET-XXXXX>` (ajustá el comentario al lenguaje: `//` Java/JS/TS/C#, `#` Python).
 - OBLIGATORIO trailer en commits con código IA: `AI-Generated: true` y `AI-Reviewed-By: <usuario>`.
 - OBLIGATORIO revisión humana (gate 4 de §3) antes del PR. La IA propone; el developer es responsable. OBLIGATORIO registrar en `.sooft/evidence.md` qué archivos son IA-generated y quién revisó.
 - PROHIBIDO remover los marcadores `[IA-generated]` para ocultar el origen.

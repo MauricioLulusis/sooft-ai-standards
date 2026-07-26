@@ -40,4 +40,4 @@ Generá/actualizá los **DTOs decorados** y las **anotaciones de los controllers
 2. No omitir `completePropertiesAPIM(document)`.
 3. `data` siempre array.
 4. No exponer PII de ejemplo real (usar datos ficticios).
-5. Marcá el código generado con `// [IA-generated] SOOFT — revisar antes de mersooft. Ticket: <TICKET-XXXXX>`.
+5. Marcá el código generado con `// [IA-generated] SOOFT — revisar antes de mergear. Ticket: <TICKET-XXXXX>`.

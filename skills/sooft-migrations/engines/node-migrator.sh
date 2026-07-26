@@ -231,7 +231,7 @@ build_project() {
 }
 
 # run_tests: corre los tests del proyecto vía npm test.
-# Para proyectos NestJS Sooft, jest hereda la config de @las librerías compartidas del proyecto/commons.
+# Para proyectos NestJS Sooft, jest hereda la config del scope de las librerías compartidas del proyecto (commons).
 run_tests() {
   require_cmd "${NPM_BIN}"
   reset_err_log

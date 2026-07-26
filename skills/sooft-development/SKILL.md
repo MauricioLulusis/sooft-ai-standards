@@ -54,7 +54,7 @@ Todo el trabajo ocurre en `.worktrees/feat-{slug}`. El `{slug}` es corto y descr
 - SPEC: frase canónica de `assets/technical-spec.md`, si aplica.
 - PLAN: frase canónica de `assets/implementation-plan.md`.
 - Código IA: frase canónica del recurso `internal/sooft-code-review-gate.md` de `sooft`.
-- PR: no mersooft hasta aprobación del developer/tech lead.
+- PR: no mergear hasta aprobación del developer/tech lead.
 
 ## Qué NO hacer
 

@@ -123,7 +123,7 @@ Registrá en `.sooft/discovery-checklist.json` las preguntas que efectivamente h
 Como parte del discovery, **antes de hacer preguntas**, detectás el arquetipo del proyecto y cargás **solo el contexto del stack detectado**:
 
 1. Leé la evidencia real del proyecto (`package.json`, `pom.xml`, etc.).
-2. Resolvé el manifest del stack detectado — Node → `skills/sooft/assets/archetypes/node.manifest.yml`; Java → `skills/sooft/assets/archetypes/java.manifest.yml`; .NET → `skills/sooft/assets/archetypes/dotnet.manifest.yml`. **Nunca cargues más de uno.**
+2. Resolvé el manifest del stack detectado — Node → `skills/sooft/assets/archetypes/node.manifest.yml`; Java → `skills/sooft/assets/archetypes/java.manifest.yml`; .NET → `skills/sooft/assets/archetypes/dotnet.manifest.yml`; Python → `skills/sooft/assets/archetypes/python.manifest.yml`. **Nunca cargues más de uno.**
 3. Recorrés `detection_order` y te quedás con el **primer** arquetipo cuyo bloque `detect` matchee la evidencia.
 4. Cargás **solo** las referencias de `load` de ese arquetipo. Las entradas `on_demand` las cargás únicamente si la tarea concreta toca esa preocupación.
 5. **Persistís** el id resuelto en `.sooft/state.json` (campo `archetype`) y las rutas cargadas en `context_loaded`. En turnos siguientes leés `archetype` del state y cargás ese bundle directo — **sin volver a detectar**.
@@ -269,7 +269,7 @@ Esto **no** arranca un workflow de feature/bug/seguridad: solo prepara el entorn
 
 ## Trazabilidad del código IA
 
-Marcá todo código que generes con `// [IA-generated] SOOFT — revisar antes de mersooft. Ticket: <TICKET-XXXXX>`. El developer lo revisa y aprueba antes del PR. La IA propone; el developer es responsable.
+Marcá todo código que generes con `// [IA-generated] SOOFT — revisar antes de mergear. Ticket: <TICKET-XXXXX>`. El developer lo revisa y aprueba antes del PR. La IA propone; el developer es responsable.
 
 Además del marcador `[IA-generated]`, el agente produce un **artefacto de autoevaluación** (`SELF-REVIEW.md`) que es input **bloqueante** del gate 4:
 

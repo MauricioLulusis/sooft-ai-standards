@@ -1,0 +1,56 @@
+# Manifest de ruteo de arquetipo — stack Python (FastAPI).
+# Consumido por skills/sooft/internal/sooft-discovery.md §1.a durante el discovery.
+# Rutas de `load`/`on_demand` son relativas a este directorio (skills/sooft/assets/archetypes/).
+#
+# Python está listado como stack oficial en AGENTS.md pero, a diferencia de Java/Node/.NET, nunca
+# tuvo un manifest propio ni un gancho de detección — el arquetipo backend-service/python/ (README +
+# tech-stack, completos) quedaba inalcanzable desde el discovery. Este archivo cierra ese gap con el
+# mismo patrón que los otros 3 manifests.
+#
+# Sin partición de variante (igual que java.manifest.yml): backend-service/python/README.md describe
+# un único arquetipo genérico FastAPI, sin nombrar un paquete/parent interno de Sooft. `fastapi` como
+# señal de detect es un paquete público real, no hace falta placeholder de redacción.
+#
+# Sin on_demand.migration: sooft-migrations/SKILL.md excluye explícitamente a Python de las
+# migraciones Clase A (solo Java, Node y .NET) y no existe ningún agente de migración para este
+# stack — no hay ruta real a la que apuntar, así que la clave se omite en vez de inventarla.
+#
+# Sin driver dedicado de tests/swagger (a diferencia de java/node/dotnet, que sí tienen
+# *-create-tests.md / *-create-yaml.md propios): on_demand.tests usa el driver genérico
+# test-generation.md; FastAPI genera OpenAPI nativamente, así que on_demand.swagger apunta al
+# propio README del arquetipo en vez de a un driver de generación de YAML que no existe para este stack.
+
+detection_order:
+  - python-fastapi
+
+archetypes:
+  python-fastapi:
+    label: Arquetipo backend Python + FastAPI
+    detect:
+      # Señal fuerte: dependencia `fastapi` en pyproject.toml/requirements.txt.
+      python_packages:
+        - fastapi
+      # Señal de apoyo.
+      python_version: ">=3.11"
+    load:
+      - backend-service/python/README.md
+      - backend-service/python/tech-stack.md
+      - backend-service/golden-rules.md
+    on_demand:
+      http_client:
+        - backend-service/python/README.md
+      new_project:
+        - backend-service/python/README.md
+      tests:
+        - ../drivers/test-generation.md
+      swagger:
+        - backend-service/python/README.md
+    # provides/requires/absent: sin precedente literal en el repo — valores plausibles a ajustar
+    # con el detalle real si Sooft define un paquete/parent interno para este stack.
+    provides:
+      - openapi-native
+      - health-checks
+      - async-runtime
+    requires:
+      - python-3.11
+    absent: []

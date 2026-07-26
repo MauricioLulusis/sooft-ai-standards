@@ -37,7 +37,7 @@ sooft-ai-standards no inventa desde cero ni copia una sola herramienta: **sintet
 1. Gate-driven         → no se avanza en un punto crítico sin aprobación explícita
 2. PRD colaborativo    → el scope se afina con un ida y vuelta breve antes de cerrarlo
 3. Spec cuando importa → SPEC técnica solo para cambios complejos o riesgosos
-4. Artefactos por tipo → docs/feats/, docs/bugs/, docs/security/
+4. Artefactos por tipo → docs/feats/, docs/bugs/, docs/security/, docs/incidents/
 5. Worktree-first      → trabajo aislado en .worktrees/ antes de tocar ramas compartidas
 6. Nombres tipo Git    → feat, fix, hot-fix, chore, security
 7. Tool-agnostic       → las herramientas se detectan o configuran, no se asumen

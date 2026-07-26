@@ -43,7 +43,7 @@ constitución `sooft` y las políticas de `skills/sooft/assets/policies/` (`secu
    hardcodeados, sin PII en logs, sin deshabilitar TLS, queries parametrizadas, sin cripto propia,
    dependencias nuevas justificadas y revisadas por CVE).
 7. **Trazabilidad.** Marcar todo bloque generado con
-   `// [IA-generated] SOOFT — revisar antes de mersooft. Ticket: <TICKET-XXXXX>` y registrar en
+   `// [IA-generated] SOOFT — revisar antes de mergear. Ticket: <TICKET-XXXXX>` y registrar en
    `.sooft/evidence.md`. PROHIBIDO remover ese marcador.
 8. **No narrar.** Reportar el resultado (compiló / falló / bloqueado) y, al cerrar, un resumen de
    qué cambió y por qué. No explicar cada paso del loop.
@@ -149,7 +149,7 @@ está migrado.
    - **Nivel 2 — Semántico:** analizar la intención de cada lado del conflicto y resolver
      preservando la semántica original. **Recompilar** después de resolver.
    - **Nivel 3 — Freno de mano:** si la resolución **no compila** → `state.phase =
-     MIGRATION_BLOCKED`, escalar. PROHIBIDO mersooft algo que no compila.
+     MIGRATION_BLOCKED`, escalar. PROHIBIDO mergear algo que no compila.
 3. **Seguridad antes del PR.** Regirse por `security-guidelines.md`. SAST si está configurado;
    hallazgos críticos/altos **bloquean** el PR.
 4. **Integración y PR — push NO automático (GATE).** PROHIBIDO `git push` (en cualquier variante)

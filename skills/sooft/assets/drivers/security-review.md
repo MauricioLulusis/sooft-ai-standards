@@ -7,7 +7,7 @@ Más enfocado y profundo que la dimensión de seguridad del code review general.
 
 ## Cuándo usarlo
 
-- Antes de mersooft cambios que tocan login, sesiones, tokens, permisos o roles.
+- Antes de mergear cambios que tocan login, sesiones, tokens, permisos o roles.
 - Cuando el cambio procesa o almacena datos personales (PII) de clientes.
 - Cuando se agregan o modifican integraciones con sistemas externos.
 - Cuando hay cambios en configuración, variables de entorno o secretos.
@@ -40,7 +40,7 @@ Revisá el código en las siguientes áreas de seguridad. Para cada hallazgo ind
 
 Severidades:
 - CRÍTICO: puede derivar en acceso no autorizado a cuentas, exposición de datos de clientes, ejecución remota de código, o bypass de controles de seguridad. Bloquea el MR y puede requerir notificación al equipo de seguridad.
-- MEDIO: debilita la postura de seguridad sin ser directamente explotable, o es explotable sólo en condiciones específicas. Debe resolverse antes de mersooft.
+- MEDIO: debilita la postura de seguridad sin ser directamente explotable, o es explotable sólo en condiciones específicas. Debe resolverse antes de mergear.
 - SUGERENCIA: mejora defensiva, hardening, o práctica recomendada que no es urgente pero reduce superficie de ataque.
 
 Áreas de revisión:
@@ -73,7 +73,7 @@ Al final del análisis, incluí:
 ### Resumen de seguridad
 - Total de hallazgos por severidad: X CRÍTICOS, X MEDIOS, X SUGERENCIAS.
 - Veredicto: APROBADO | APROBADO CON CAMBIOS MENORES | REQUIERE REVISIÓN DE SEGURIDAD | RECHAZADO.
-- Si hay hallazgos CRÍTICOS: indicá si el cambio requiere escalamiento al equipo de seguridad de Sooft antes de mersooft.
+- Si hay hallazgos CRÍTICOS: indicá si el cambio requiere escalamiento al equipo de seguridad de Sooft antes de mergear.
 - Las 2 o 3 cosas más importantes a corregir.
 ```
 

@@ -50,12 +50,12 @@ Todo el trabajo ocurre en `.worktrees/security-{slug}`.
 - Scope: frase canónica de `assets/security-scope.md`.
 - REMEDIATION_PLAN: frase canónica de `assets/remediation-plan.md`.
 - Código IA: frase canónica del recurso `internal/sooft-code-review-gate.md` de `sooft`.
-- PR: no mersooft hasta aprobación del developer/tech lead y de Ciberseguridad si toca auth.
+- PR: no mergear hasta aprobación del developer/tech lead y de Ciberseguridad si toca auth.
 
 ## Qué NO hacer
 
 - No remediar hallazgos fuera del scope confirmado.
 - No mezclar fixes de seguridad con features o refactors.
 - No hardcodear secretos ni loguear PII.
-- No mersooft cambios de auth/autorización sin revisión de Ciberseguridad.
+- No mergear cambios de auth/autorización sin revisión de Ciberseguridad.
 - No crear estados que no estén en la máquina de estados de la skill `sooft`.

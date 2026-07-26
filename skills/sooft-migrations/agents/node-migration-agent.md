@@ -64,7 +64,7 @@ canónica de pasos y errores comunes está en:
    hardcodeados, sin PII en logs, sin deshabilitar TLS, queries parametrizadas, dependencias nuevas
    revisadas por CVE). análisis estático (SAST) + escaneo de dependencias (SCA) antes del PR; Very High/High bloquean.
 9. **Trazabilidad.** Marcar todo bloque generado con
-   `// [IA-generated] SOOFT — revisar antes de mersooft. Ticket: <TICKET-XXXXX>` y registrar en
+   `// [IA-generated] SOOFT — revisar antes de mergear. Ticket: <TICKET-XXXXX>` y registrar en
    `.sooft/evidence.md`. PROHIBIDO remover ese marcador.
 10. **No narrar.** Reportar el resultado (buildeó / falló / bloqueado) y, al cerrar, un resumen de
     qué cambió y por qué. No explicar cada paso del loop.
@@ -160,7 +160,7 @@ resto. **El "verde" es: `npm run build` OK + tests OK + `/liveness` y `/manifest
    - **Nivel 2 — Semántico:** analizar la intención de cada lado y resolver preservando semántica.
      **Rebuildear** después de resolver.
    - **Nivel 3 — Freno de mano:** si la resolución **no buildea** → `state.phase =
-     MIGRATION_BLOCKED`, escalar. PROHIBIDO mersooft algo que no buildea.
+     MIGRATION_BLOCKED`, escalar. PROHIBIDO mergear algo que no buildea.
 3. **Seguridad antes del PR.** Regirse por `security-guidelines.md`. análisis estático (SAST) + escaneo de dependencias (SCA) si están
    configurados; Very High/High **bloquean** el PR.
 4. **Integración y PR — push NO automático (GATE).** PROHIBIDO `git push` (en cualquier variante)

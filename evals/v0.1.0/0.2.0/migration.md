@@ -1,6 +1,6 @@
 # Migracion v0.1.0 -> v0.2.0
 
-`evals/v0.1.0/` queda como referencia historica. La suite vigente es `evals/v0.2.0/`.
+`evals/v0.1.0/` queda como referencia historica. La suite vigente es `evals/v0.1.0/0.2.0/`.
 
 ## Escenarios
 

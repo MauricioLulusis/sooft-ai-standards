@@ -33,7 +33,7 @@ el issue tracker y a los artefactos SOOFT del proyecto.
 - [ ] Seguridad: `FINDINGS.md` y `REMEDIATION_PLAN.md` existen.
 - [ ] `.sooft/evidence.md` existe y está completo, actualizado según el recurso `internal/sooft-evidence.md` de `sooft`.
 - [ ] `.sooft/state.json` tiene `phase` coherente con la máquina de estados de la skill `sooft` (§4) y el gate de plan
-      de la rama está aprobado. Sin plan aprobado, el PR no puede mersooftse.
+      de la rama está aprobado. Sin plan aprobado, el PR no puede mergearse.
 
 Verificá que `state.json` tenga esta estructura mínima:
 
@@ -126,5 +126,5 @@ Verificá que `state.json` tenga esta estructura mínima:
 }
 ```
 
-Si `"status"` es `"rejected"`, el MR no puede mersooftse hasta que todos los `findings` estén
+Si `"status"` es `"rejected"`, el MR no puede mergearse hasta que todos los `findings` estén
 resueltos y la revisión se repita.

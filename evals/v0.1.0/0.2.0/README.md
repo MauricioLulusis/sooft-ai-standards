@@ -61,5 +61,5 @@ Los fixtures estan materializados con archivos sinteticos seguros para que la ev
 Usa esta forma al delegar una corrida:
 
 ```text
-Ejecuta la task evals/v0.2.0/tasks/<task-id>. Usa instruction.md como prompt del agente evaluado, prepara el fixture indicado, captura toda evidencia disponible y reporta contra verification.md y evals/v0.2.0/rubric.md. No uses un runner del repo porque no existe por diseno.
+Ejecuta la task evals/v0.1.0/0.2.0/tasks/<task-id>. Usa instruction.md como prompt del agente evaluado, prepara el fixture indicado, captura toda evidencia disponible y reporta contra verification.md y evals/v0.1.0/0.2.0/rubric.md. No uses un runner del repo porque no existe por diseno.
 ```

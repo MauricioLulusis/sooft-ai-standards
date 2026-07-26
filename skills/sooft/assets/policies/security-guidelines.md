@@ -71,6 +71,6 @@ El agente NUNCA aprueba excepciones de seguridad por su cuenta.
 
 ## Trazabilidad del código generado por IA
 
-- OBLIGATORIO marcar todo bloque generado por IA: `// [IA-generated] SOOFT — revisar antes de mersooft. Ticket: <TICKET-XXXXX>`.
+- OBLIGATORIO marcar todo bloque generado por IA: `// [IA-generated] SOOFT — revisar antes de mergear. Ticket: <TICKET-XXXXX>`.
 - OBLIGATORIO revisión humana del código IA antes de abrir el PR.
 - PROHIBIDO remover los marcadores `[IA-generated]` para ocultar el origen.

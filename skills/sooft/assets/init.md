@@ -205,7 +205,7 @@ Con toda la información recolectada, escribí los dos archivos.
 > **`archetype` y `context_loaded` — carga de contexto acotada al stack.** El campo `archetype`
 > guarda el `id` que se resuelve contra el manifest del stack detectado
 > (`archetypes/node.manifest.yml` para Node, `archetypes/java.manifest.yml` para Java,
-> `archetypes/dotnet.manifest.yml` para .NET)
+> `archetypes/dotnet.manifest.yml` para .NET, `archetypes/python.manifest.yml` para Python)
 > a partir de la evidencia detectada (scope en `package.json` y versión de Node, `<parent>` del
 > `pom.xml` y `java.version`, o `<PackageReference>` a `<paquete-base-pom>`/`<paquete-base-paas>` en un
 > `.csproj` y `<TargetFramework>`). En el init podés

@@ -41,7 +41,7 @@ Para cada hallazgo en scope:
 
 ## Nota sobre cambios en auth/autorización
 Si algún fix modifica lógica de autenticación o autorización: indicar explícitamente que
-requiere revisión de Ciberseguridad antes de mersooft.
+requiere revisión de Ciberseguridad antes de mergear.
 ```
 
 ## Transición

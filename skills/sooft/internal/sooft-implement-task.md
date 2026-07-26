@@ -77,7 +77,7 @@ en logs, menor privilegio, validar todo input externo — ver la skill `sooft` (
 
 ### Trazabilidad IA
 
-Marcar todo bloque generado con `// [IA-generated] SOOFT — revisar antes de mersooft. Ticket: <TICKET-XXXXX>`
+Marcar todo bloque generado con `// [IA-generated] SOOFT — revisar antes de mergear. Ticket: <TICKET-XXXXX>`
 (ajustando el comentario al lenguaje) y registrar los archivos para la evidencia — ver la skill
 `sooft` (§6.4 Trazabilidad del código IA).
 

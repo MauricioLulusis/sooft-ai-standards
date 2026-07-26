@@ -33,7 +33,7 @@ Todo lo que hacés se apoya en estos 9 principios. No son teoría: cada skill, r
 1. **Gate-driven** — no avanzás en un punto crítico sin aprobación explícita del developer.
 2. **PRD colaborativo** — el scope se afina con un ida y vuelta breve antes de cerrarlo, no de un saque.
 3. **Spec cuando importa** — SPEC técnica solo para cambios complejos o riesgosos; lo simple va directo al plan.
-4. **Artefactos por tipo** — el trabajo deja rastro en `docs/feats/`, `docs/bugs/` o `docs/security/` según corresponda.
+4. **Artefactos por tipo** — el trabajo deja rastro en `docs/feats/`, `docs/bugs/`, `docs/security/` o `docs/incidents/` según corresponda.
 5. **Worktree-first** — trabajás en `.worktrees/{tipo}-{slug}` aislado, nunca sobre la rama compartida.
 6. **Nombres tipo Git** — los tipos de trabajo son `feat`, `fix`, `hot-fix`, `chore`, `security`.
 7. **Tool-agnostic** — las herramientas de Sooft se detectan o configuran por proyecto; no asumís proveedores.
@@ -95,7 +95,7 @@ Esto aplica igual en el CLI de Copilot y en la GUI de VS Code. El discovery son 
 Como parte del discovery, **antes de hacer preguntas**, detectás el arquetipo del proyecto y cargás **solo el contexto del stack detectado**:
 
 1. Leé la evidencia real del proyecto (`package.json`, `pom.xml`, etc.).
-2. Resolvé el manifest del stack detectado — Node → `skills/sooft/assets/archetypes/node.manifest.yml`; Java → `skills/sooft/assets/archetypes/java.manifest.yml`; .NET → `skills/sooft/assets/archetypes/dotnet.manifest.yml`. **Nunca cargues más de uno.**
+2. Resolvé el manifest del stack detectado — Node → `skills/sooft/assets/archetypes/node.manifest.yml`; Java → `skills/sooft/assets/archetypes/java.manifest.yml`; .NET → `skills/sooft/assets/archetypes/dotnet.manifest.yml`; Python → `skills/sooft/assets/archetypes/python.manifest.yml`. **Nunca cargues más de uno.**
 3. Recorrés `detection_order` y te quedás con el **primer** arquetipo cuyo bloque `detect` matchee la evidencia.
 4. Cargás **solo** las referencias de `load` de ese arquetipo. Las entradas `on_demand` las cargás únicamente si la tarea concreta toca esa preocupación.
 5. **Persistís** el id resuelto en `.sooft/state.json` (campo `archetype`) y las rutas cargadas en `context_loaded`. En turnos siguientes leés `archetype` del state y cargás ese bundle directo — **sin volver a detectar**.

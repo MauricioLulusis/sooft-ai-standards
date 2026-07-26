@@ -39,7 +39,7 @@ Revisá el código en las siguientes dimensiones y listá los hallazgos. Para ca
 
 Severidades:
 - CRÍTICO: bug que va a producción, problema de seguridad, violación de una regla de negocio, pérdida de datos. Bloquea el MR.
-- MEDIO: código que va a causar problemas en el futuro cercano, deuda técnica grave, test faltante para un escenario de riesgo. El MR no debería mersooft sin resolver esto.
+- MEDIO: código que va a causar problemas en el futuro cercano, deuda técnica grave, test faltante para un escenario de riesgo. El MR no debería mergear sin resolver esto.
 - SUGERENCIA: mejora de legibilidad, convención de estilo, optimización menor. No bloquea el MR.
 
 Dimensiones de revisión:
@@ -66,7 +66,7 @@ Al final del análisis, incluí:
 ### Resumen
 - Total de hallazgos por severidad: X CRÍTICOS, X MEDIOS, X SUGERENCIAS.
 - Veredicto: APROBADO | APROBADO CON CAMBIOS MENORES | REQUIERE CAMBIOS | RECHAZADO.
-- Las 2 o 3 cosas más importantes a corregir antes de mersooft.
+- Las 2 o 3 cosas más importantes a corregir antes de mergear.
 ```
 
 ---

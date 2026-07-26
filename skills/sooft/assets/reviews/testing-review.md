@@ -105,7 +105,7 @@ gate de code review (recurso `internal/sooft-code-review-gate.md` de `sooft`).
 - [ ] Todos los tests pasan localmente antes de abrir el MR. No se abre un MR con tests
       rotos "para que CI los detecte".
 - [ ] El pipeline de CI completó exitosamente en la rama del MR. Si CI falla, el MR no
-      puede mersooftse.
+      puede mergearse.
 - [ ] Si hay tests que se saltean (`@Disabled`, `@Ignore`, `xit`, `skip`), hay una
       justificación en el comentario y un ticket de seguimiento para rehabilitarlos.
       Un test deshabilitado sin justificación es deuda.

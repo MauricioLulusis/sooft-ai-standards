@@ -115,7 +115,7 @@ abrirse hasta que se resuelva.
 ## Análisis estático (SAST / calidad)
 
 - [ ] El análisis estático para la rama del MR/PR está en verde o los hallazgos están
-      revisados y justificados. No se puede mersooft con issues de severidad `BLOCKER` o
+      revisados y justificados. No se puede mergear con issues de severidad `BLOCKER` o
       `CRITICAL` sin revisión explícita.
 - [ ] Los security hotspots marcados por la herramienta fueron revisados uno por uno. Si se
       marcan como "revisados", tiene que haber una justificación escrita

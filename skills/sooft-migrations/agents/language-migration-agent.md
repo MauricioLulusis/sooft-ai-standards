@@ -48,7 +48,7 @@ directamente las herramientas nativas del destino (`dotnet`, `mvn`, `npm`, etc.)
    hardcodeados, sin PII en logs, sin deshabilitar TLS, queries parametrizadas, dependencias
    nuevas revisadas por CVE).
 8. **Trazabilidad.** Marcar todo bloque generado con
-   `// [IA-generated] SOOFT — revisar antes de mersooft. Ticket: <TICKET-XXXXX>` y registrar en
+   `// [IA-generated] SOOFT — revisar antes de mergear. Ticket: <TICKET-XXXXX>` y registrar en
    `.sooft/evidence.md`. PROHIBIDO remover ese marcador.
 9. **No narrar.** Reportar el resultado por módulo (portó / falló / bloqueado) y, al cerrar, un
    resumen de qué cambió y por qué. No explicar cada paso del loop.
@@ -101,7 +101,7 @@ git worktree add .worktrees/migration-{slug} -b migration/{slug}
    - **Nivel 2 — Semántico:** analizar la intención de cada lado y resolver preservando semántica.
      **Rebuildear** después de resolver.
    - **Nivel 3 — Freno de mano:** si la resolución **no buildea** → `state.phase =
-     MIGRATION_BLOCKED`, escalar. PROHIBIDO mersooft algo que no buildea.
+     MIGRATION_BLOCKED`, escalar. PROHIBIDO mergear algo que no buildea.
 3. **Seguridad antes del PR.** Regirse por `security-guidelines.md`. SAST si está configurado;
    hallazgos críticos/altos **bloquean** el PR.
 4. **Integración y PR — push NO automático (GATE).** PROHIBIDO `git push` (en cualquier variante)

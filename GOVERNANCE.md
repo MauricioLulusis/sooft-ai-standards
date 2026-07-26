@@ -91,7 +91,9 @@ Cada ejecución del pipeline debe dejar como mínimo:
 docs/feats/{slug}/   (o docs/bugs/{slug}/ · docs/security/{slug}/)
 ├── PRD.md           → requerimiento aprobado
 ├── SPEC.md          → diseño técnico aprobado (si aplica)
-└── PLAN.md          → plan con tareas aprobado
+├── PLAN.md          → plan con tareas aprobado
+├── STATUS.md        → snapshot semántico compacto, actualizado en cada transición de fase
+└── SELF-REVIEW.md   → autoevaluación de código IA, input bloqueante del gate 4
 ```
 
 El archivo `evidence.md` debe incluir:
@@ -113,7 +115,7 @@ El archivo `evidence.md` debe incluir:
 - Implementar código sin spec aprobada
 - Modificar arquitectura sin ADR
 - Trabajar sobre datos sensibles sin revisión de seguridad
-- Mersooft a ramas principales
+- Mergear a ramas principales
 - Ejecutar comandos destructivos (drop, delete, truncate, etc.)
 - Exponer o registrar información interna de Sooft
 

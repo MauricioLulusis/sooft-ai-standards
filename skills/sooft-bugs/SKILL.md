@@ -85,7 +85,7 @@ entorno, ticket INC/RITM si hay), documentá `docs/bugs/{slug}/BUG.md`:
 
 - FIX_PLAN: frase canónica de `assets/fix-plan.md`.
 - Código IA: frase canónica del recurso `internal/sooft-code-review-gate.md` de `sooft`.
-- PR: no mersooft hasta aprobación del developer/tech lead.
+- PR: no mergear hasta aprobación del developer/tech lead.
 
 ## Qué NO hacer
 

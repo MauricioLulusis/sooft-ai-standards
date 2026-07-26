@@ -39,7 +39,7 @@ Antes de planificar, evaluar:
 Igual que en desarrollo:
 - Pasos de implementación ordenados
 - Tests de regresión a ejecutar
-- Estrategia de validación antes de mersooft
+- Estrategia de validación antes de mergear
 
 GATE: el PLAN debe estar aprobado antes de empezar a tocar código.
 

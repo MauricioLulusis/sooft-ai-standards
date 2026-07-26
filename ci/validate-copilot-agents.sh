@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# [IA-generated] SOOFT — revisar antes de mersooft. Ticket: N/A
+# [IA-generated] SOOFT — revisar antes de mergear. Ticket: N/A
 # Validates GitHub Copilot CLI custom agents and SOOFT routing instructions.
 
 set -eu
