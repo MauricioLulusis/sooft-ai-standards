@@ -4,13 +4,16 @@
 #
 # NestJS no tiene manifest propio: ningún archivo del repo nombra un 4to *.manifest.yml, y
 # sooft-discovery.md agrupa "Express/Fastify/NestJS" como frameworks detectados desde el mismo
-# package.json de un proyecto Node. Por eso node-nest vive acá como 3er archetype, con precedencia
-# sobre los genéricos node-original/node-lite (framework específico antes que el genérico).
+# package.json de un proyecto Node. Por eso node-nest vive acá como 2do archetype, con precedencia
+# sobre el genérico node-express-fastify (framework específico antes que el genérico).
+#
+# Un solo archetype genérico para Express/Fastify (no hay "original"/"lite": esa partición asumía un
+# paquete npm interno corporativo que no aplica a Sooft — la detección se basa en los frameworks
+# públicos reales que recomienda tech-stack.md).
 
 detection_order:
   - node-nest
-  - node-original
-  - node-lite
+  - node-express-fastify
 
 archetypes:
   node-nest:
@@ -39,18 +42,18 @@ archetypes:
     provides:
       - dependency-injection
       - health-checks
-      - envelope-response
+      - structured-error-response
     requires:
       - node-20-lts
     absent: []
 
-  node-original:
-    label: Arquetipo backend Node — variante "original" (paridad completa con las librerías compartidas)
+  node-express-fastify:
+    label: Arquetipo backend Node con Express o Fastify
     detect:
-      # Señal fuerte: el scope interno de las librerías compartidas del proyecto (redactado —
-      # sin precedente literal del nombre real en el repo; ver skills-migrations/SKILL.md §evidencia).
+      # Señal fuerte: cualquiera de los dos frameworks recomendados en tech-stack.md.
       package_scopes:
-        - <scope-librerias-sooft>
+        - express
+        - fastify
       # Señal de apoyo. Node <20 dispara on_demand.migration (confirmado en sooft-discovery.md).
       node_engines: ">=20"
     load:
@@ -69,43 +72,11 @@ archetypes:
       swagger:
         - ../drivers/node-create-swagger.md
     provides:
-      - logging
+      - structured-logging
       - http-client
-      - tracing
-      - claims
+      - otel-tracing
       - health-checks
-      - swagger
+      - openapi
     requires:
       - node-20-lts
     absent: []
-
-  node-lite:
-    label: Arquetipo backend Node — variante "lite" (subset acotado de las librerías compartidas)
-    detect:
-      package_scopes:
-        - <scope-librerias-sooft>
-      node_engines: ">=20"
-    load:
-      - backend-service/node/README.md
-      - backend-service/node/tech-stack.md
-      - backend-service/golden-rules.md
-    on_demand:
-      http_client:
-        - backend-service/node/README.md
-      new_project:
-        - backend-service/node/README.md
-      migration:
-        - ../../../sooft-migrations/agents/node-migration-agent.md
-      tests:
-        - ../drivers/node-create-tests.md
-      swagger:
-        - ../drivers/node-create-swagger.md
-    provides:
-      - logging
-      - http-client
-      - health-checks
-    requires:
-      - node-20-lts
-    absent:
-      - tracing
-      - claims

@@ -4,7 +4,7 @@ mode: agent
 
 # Script para generar tests
 
-Sos un asistente experto en testing para microservicios .NET 8 + ASP.NET Core con arquetipos de Sooft (`<paquete-base-pom>` / `<paquete-base-paas>`).
+Sos un asistente experto en testing para microservicios .NET 8 + ASP.NET Core con el arquetipo backend de Sooft.
 Tu tarea es generar o actualizar tests de alta calidad para la clase/método indicado, respetando stack, versiones y convenciones del proyecto actual.
 
 ## Objetivo
@@ -161,7 +161,7 @@ reportgenerator \
 2. No usar nombres fully qualified en el código; usar `using` statements.
 3. No agregar dependencias nuevas sin justificar y validar alineación con el proyecto (`Moq`, `xUnit`, `FluentAssertions`, `coverlet.collector` están OK; agregar otras requiere OK del tech lead).
 4. Mantener cambios mínimos, precisos y trazables.
-5. No usar `Newtonsoft.Json` en tests — el proyecto está en `System.Text.Json` (arquetipo 4.x / 1.1.x).
+5. No usar `Newtonsoft.Json` en tests — el proyecto está en `System.Text.Json`.
 
 ## 7) Entrega esperada
 

@@ -206,10 +206,9 @@ Con toda la información recolectada, escribí los dos archivos.
 > guarda el `id` que se resuelve contra el manifest del stack detectado
 > (`archetypes/node.manifest.yml` para Node, `archetypes/java.manifest.yml` para Java,
 > `archetypes/dotnet.manifest.yml` para .NET, `archetypes/python.manifest.yml` para Python)
-> a partir de la evidencia detectada (scope en `package.json` y versión de Node, `<parent>` del
-> `pom.xml` y `java.version`, o `<PackageReference>` a `<paquete-base-pom>`/`<paquete-base-paas>` en un
-> `.csproj` y `<TargetFramework>`). En el init podés
-> dejarlo precargado si ya lo inferiste (ej. `node-original`, `conjunto de librerías-web-v2`, `dotnet-paas`); si no, queda
+> a partir de la evidencia detectada (framework en `package.json` y versión de Node, `<parent>` del
+> `pom.xml` y `java.version`, o SDK/`<TargetFramework>` de un `.csproj`). En el init podés
+> dejarlo precargado si ya lo inferiste (ej. `node-express-fastify`, `java-spring`, `dotnet-aspnet`); si no, queda
 > `null` y lo resuelve el discovery la primera vez. **La regla es traer SOLO el contexto del stack
 > detectado**: si el proyecto es Node, se cargan únicamente las referencias Node del bundle `load`
 > de ese arquetipo — NUNCA las de Java o .NET que el proyecto no usa (eso sobrecarga el
@@ -223,22 +222,23 @@ Usá Write para escribir ambos archivos. No invoques scripts externos ni hooks d
 
 Si el proyecto no tiene `.sooft/PRINCIPLES.md`, ofrecé crearlo a partir de la plantilla canónica `skills/sooft/assets/templates/PRINCIPLES.md`, completando lo que se haya detectado del stack y las integraciones. Es el contrato técnico estable que el agente respeta en cada feature. Si el developer prefiere posponerlo, dejalo para después — no es bloqueante para inicializar.
 
-> **Si el stack es backend (Java + Spring, Node + NestJS o .NET + ASP.NET Core), sembrá
+> **Si el stack es backend (Java + Spring, Node/NestJS, .NET + ASP.NET Core o Python + FastAPI), sembrá
 > `.sooft/PRINCIPLES.md` con las Golden Rules de backend** — así viajan al proyecto y el agente las
 > lee en cada sesión (no quedan solo como referencia en sooft-ai-standards). Incluí, adaptadas al
 > stack detectado:
 >
 > - **Arquitectura:** separación de capas `Controller → Service → Client/Repository` (sin lógica de
 >   negocio en controllers, sin acceso a datos desde el controller, sin dependencias al revés); el
->   BFF es **pasamanos** (orquesta POM/core, no es fuente de verdad; si hay base, es caché); el
->   **arquetipo es obligatorio** (no se reimplementa logging/http/tracing/errores/claims/health —
->   en Node, paquete `paas` full por defecto, no lib por lib); **envelope corporativo** `meta`/`data`
->   (siempre array)/`errors` en toda respuesta, sin stack traces al cliente.
+>   BFF es **pasamanos** (orquesta servicios downstream, no es fuente de verdad; si hay caché, es
+>   eso — caché, no el store de verdad); no reimplementar desde cero lo transversal (logging, cliente
+>   HTTP, tracing, manejo de errores, health checks) si el proyecto ya tiene una convención
+>   establecida; **envelope de respuesta uniforme** `meta`/`data` (siempre array)/`errors` en toda
+>   respuesta, sin stack traces al cliente.
 > - **Naming + tests + seguridad:** convenciones de nombres por capa, cobertura de tests del proyecto
 >   y las restricciones no negociables de seguridad (sin secretos hardcodeados, sin PII en logs).
 >
 > La fuente canónica completa es `archetypes/backend-service/golden-rules.md` (cross-stack) más el
-> detalle por stack en `archetypes/backend-service/{java,node,dotnet}/`. Referenciala en
+> detalle por stack en `archetypes/backend-service/{java,node,dotnet,python}/`. Referenciala en
 > `PRINCIPLES.md` para que el developer pueda profundizar. No dupliques el archivo entero: sembrá lo
 > esencial y citá la fuente.
 

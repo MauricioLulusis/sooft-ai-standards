@@ -16,7 +16,7 @@ Crear y/o actualizar tests **Jest** (`*.spec.ts`) siguiendo la estructura del re
 1. Detectar y respetar las versiones del proyecto (Node, NestJS, Jest, ts-jest).
 2. No asumir versiones específicas.
 3. Usar el framework y estilo ya adoptados en el repo (Jest + `@nestjs/testing`, mocks con `@golevelup/ts-jest` o `jest.mock`).
-4. Heredar la config de Jest del arquetipo cuando exista (`jest.config.ts` → `module.exports = config.jestConfig` de `@las librerías compartidas del proyecto/commons`).
+4. Usar la config de Jest existente del proyecto (`jest.config.ts` / `package.json#jest`), sin reemplazarla.
 
 ## 2) Estándar de calidad de tests (obligatorio)
 
@@ -39,7 +39,7 @@ Según la arquitectura del servicio:
 
 ### B) Tests de clientes HTTP
 - Mockear `HttpClientService` (p. ej. `createMock<HttpClientService>()`).
-- Verificar URL, método, headers propagados (`id_channel`, `authorization`) y credenciales APIm.
+- Verificar URL, método, headers propagados (ej. `authorization`) y credenciales de servicios externos.
 - Verificar mapeo de 4xx (403/404…) a excepciones de dominio/NestJS y de 5xx.
 
 ### C) Tests de controllers
@@ -63,7 +63,7 @@ Según la arquitectura del servicio:
 ## 5) Quality Gates obligatorios (Jest coverage + Sonar)
 
 ### 5.1 Verificar configuración
-1. Confirmar `collectCoverage`/`coverageThreshold` en la config de Jest (o el heredado de `commons`).
+1. Confirmar `collectCoverage`/`coverageThreshold` en la config de Jest del proyecto.
 2. Confirmar exclusiones de cobertura coherentes: excluir `main.ts`, `*.module.ts`, `config/`, DTOs/constantes sin lógica, archivos generados. Las exclusiones de Sonar y de Jest deben coincidir en intención.
 3. Si no hay exclusiones, crearlas centradas en capas sin lógica de negocio (módulos, config, constantes, DTOs), dejando services/clients/guards/validadores dentro de la cobertura.
 

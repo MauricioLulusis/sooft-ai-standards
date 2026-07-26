@@ -1,6 +1,8 @@
 # Migracion v0.1.0 -> v0.2.0
 
-`evals/v0.1.0/` queda como referencia historica. La suite vigente es `evals/v0.1.0/0.2.0/`.
+`evals/v0.1.0/` (la suite legacy, 7 escenarios en un unico `evals.json`) fue removida del repo una
+vez completada y verificada la migracion: los 7 escenarios estan cubiertos 1:1 abajo y la suite
+vigente es `evals/` (este directorio). Esta tabla queda como registro historico de la migracion.
 
 ## Escenarios
 
@@ -8,11 +10,11 @@
 |-----------------|-------------|--------|
 | `dev-simple-prd-gate` | `tasks/dev-simple-prd-gate/` | Migrado |
 | `dev-complex-spec-required` | `tasks/dev-complex-spec-required/` | Migrado |
-| `bugs-no-code-before-plan` | `tasks/sooft-bugs-no-code-before-plan/` | Migrado |
+| `bugs-no-code-before-plan` | `tasks/bugs-no-code-before-plan/` | Migrado |
 | `security-scope-before-fixes` | `tasks/security-scope-before-fixes/` | Migrado |
 | `no-vibe-coding` | `tasks/no-vibe-coding/` | Migrado |
 | `init-no-long-questionnaire` | `tasks/init-no-long-questionnaire/` | Migrado |
-| `status-no-invention` | `tasks/sooft-status-no-invention/` | Migrado |
+| `status-no-invention` | `tasks/status-no-invention/` | Migrado |
 | N/A | `tasks/dev-adversarial-skip-prd/` | Nuevo |
 | N/A | `tasks/dev-ambiguous-approval/` | Nuevo |
 | N/A | `tasks/invalid-state-blocks-progress/` | Nuevo |

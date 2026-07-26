@@ -1,53 +1,23 @@
 # Manifest de ruteo de arquetipo — stack .NET / ASP.NET Core.
 # Consumido por skills/sooft/internal/sooft-discovery.md §1.a durante el discovery.
 # Rutas de `load`/`on_demand` son relativas a este directorio (skills/sooft/assets/archetypes/).
+#
+# Un solo archetype genérico, igual que java-spring y python-fastapi: no hay evidencia de que Sooft
+# tenga un paquete/parent NuGet interno corporativo (ese concepto era arquitectura propia de la
+# organización de origen de la metodología, no de Sooft) — la detección se basa en señales públicas
+# reales del ecosistema ASP.NET Core, no en un paquete propietario.
 
 detection_order:
-  - dotnet-pom
-  - dotnet-paas
+  - dotnet-aspnet
 
 archetypes:
-  dotnet-pom:
-    label: Arquetipo .NET sobre el paquete base estilo "parent POM"
+  dotnet-aspnet:
+    label: Arquetipo backend .NET + ASP.NET Core
     detect:
-      # Señal fuerte: sola alcanza para resolver el archetype (confirmado en sooft-discovery.md §1.a).
-      nuget_packages:
-        - <paquete-base-pom>
-      # Señal de apoyo: solo refuerza, no decide por sí sola.
-      target_framework: net8.0
-    load:
-      - backend-service/dotnet/README.md
-      - backend-service/dotnet/tech-stack.md
-      - backend-service/golden-rules.md
-    on_demand:
-      http_client:
-        - backend-service/dotnet/README.md
-      new_project:
-        - backend-service/dotnet/README.md
-      migration:
-        - ../../../sooft-migrations/agents/dotnet-migration-agent.md
-      tests:
-        - ../drivers/dotnet-create-tests.md
-      swagger:
-        - ../drivers/dotnet-create-yaml.md
-    # provides/requires/absent: sin precedente literal en el repo — valores plausibles a ajustar
-    # con el detalle real del paquete base cuando esté disponible.
-    provides:
-      - envelope-response # meta/data/errors — ver drivers/dotnet-create-yaml.md
-      - health-checks
-      - http-client-resilience
-      - otel-tracing
-    requires:
-      - dotnet-8-sdk
-    absent:
-      - swashbuckle-aspnetcore
-      - newtonsoft-json
-
-  dotnet-paas:
-    label: Arquetipo .NET sobre el paquete base estilo PaaS
-    detect:
-      nuget_packages:
-        - <paquete-base-paas>
+      # Señal fuerte: SDK real y público de todo proyecto Web API/Minimal API de ASP.NET Core.
+      csproj_sdk:
+        - Microsoft.NET.Sdk.Web
+      # Señal de apoyo.
       target_framework: net8.0
     load:
       - backend-service/dotnet/README.md
@@ -65,12 +35,10 @@ archetypes:
       swagger:
         - ../drivers/dotnet-create-yaml.md
     provides:
-      - envelope-response
+      - structured-error-response
       - health-checks
       - http-client-resilience
       - otel-tracing
     requires:
       - dotnet-8-sdk
-    absent:
-      - swashbuckle-aspnetcore
-      - newtonsoft-json
+    absent: []

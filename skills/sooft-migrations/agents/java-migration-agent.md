@@ -32,8 +32,8 @@ constitución `sooft` y las políticas de `skills/sooft/assets/policies/` (`secu
 3. **Usar el motor; el trabajo propio es el quirúrgico.** Dejar que **OpenRewrite** reescriba en
    masa (~80%) y tocar solo lo que el motor no pudo: ediciones **mínimas y localizadas**, nunca
    masivas. Esto incluye los **recursos** que OpenRewrite-Java no toca (`application.properties`/
-   `.yml`, `logback-spring.xml`): ver `migrate-to-java21.md` §3 y §5, en especial el prefijo
-   `pom.commons.starter.*` → `pom.commons.neo.starter.*`, sin el cual la app compila pero no arranca.
+   `.yml`, `logback-spring.xml`) — properties/prefijos de configuración renombrados entre versiones
+   mayores de Spring Boot son la causa más común de que la app compile pero no arranque.
 4. **Reparar leyendo el log, no adivinando.** La fuente es
    `.sooft/migrations-logs/migration_errors.log`. Resolver error por error; PROHIBIDO inventar
    clases, métodos o imports que no existan.
@@ -52,8 +52,7 @@ constitución `sooft` y las políticas de `skills/sooft/assets/policies/` (`secu
    `GitProperties`/`git.properties`), es un problema de **fase del ciclo de vida de Maven**, NO de
    dependencias: la librería está, falta el recurso porque se genera en una fase que el IDE o
    `mvn test` saltea. PROHIBIDO chapotear en el `pom`; revisar en qué fase se genera el recurso y
-   adelantarla (p. ej. `spring-boot-maven-plugin:build-info` en `generate-resources`). Ver
-   `migrate-to-java21.md` §1.5.
+   adelantarla (p. ej. `spring-boot-maven-plugin:build-info` en `generate-resources`).
 10. **NUNCA eliminar el worktree ni pushear la rama por iniciativa propia.** El worktree es el
     trabajo del developer. PROHIBIDO correr `git worktree remove`, `git worktree prune`,
     `--cleanup-worktree` / `-CleanupWorktree` ni cualquier borrado del worktree sin confirmación
@@ -131,7 +130,7 @@ está migrado.
 4. **Leer errores y reparar quirúrgicamente:** los de compilación van a
    `.sooft/migrations-logs/migration_errors.log`; los de arranque salen del output del test/boot.
    Ediciones **precisas** (no masivas), incluyendo los recursos que OpenRewrite no toca
-   (`application.properties`/`.yml`, `logback-spring.xml` según `migrate-to-java21.md` §3 y §5).
+   (`application.properties`/`.yml`, `logback-spring.xml`).
 5. **Repetir** hasta que compile **y arranque** limpio. **Tope de 5 intentos** (compile + arranque
    combinados). Al 5º fallido → `state.phase = MIGRATION_BLOCKED`, registrar en
    `.sooft/evidence.md` y escalar al developer. PROHIBIDO declarar la migración OK con el arranque

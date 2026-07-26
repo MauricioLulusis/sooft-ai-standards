@@ -57,8 +57,8 @@ Este repositorio define cómo trabaja la IA en el desarrollo de Sooft Technology
 
 Antes de abrir el MR:
 
-- [ ] Los evals de `evals/v0.1.0/0.2.0/` pasan el umbral de la rubrica (task >= 0.8, suite >= 0.85, ningun hard failure con score > 0). No hay runner propio: pedile a un subagente o harness externo que consuma las tasks.
-- [ ] Si el cambio modifica comportamiento del agente, se actualizaron las tasks afectadas y `evals/v0.1.0/0.2.0/migration.md` si corresponde.
+- [ ] Los evals de `evals/` pasan el umbral de la rubrica (task >= 0.8, suite >= 0.85, ningun hard failure con score > 0). No hay runner propio: pedile a un subagente o harness externo que consuma las tasks.
+- [ ] Si el cambio modifica comportamiento del agente, se actualizaron las tasks afectadas.
 - [ ] No se introdujeron secretos, credenciales ni PII.
 - [ ] El `CHANGELOG.md` refleja el cambio.
 - [ ] Los README afectados quedaron alineados con el cambio.

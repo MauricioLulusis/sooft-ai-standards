@@ -6,8 +6,7 @@
 #
 # Valida la integridad del repo en cada cambio:
 # - sintaxis de los scripts .sh
-# - JSON bien formado (manifiestos de evals)
-# - estructura estatica de evals v0.1.0/0.2.0 (sin runner)
+# - estructura estatica de evals/ (sin runner)
 # - ausencia de referencias a la metodología vieja
 # - ausencia de secretos hardcodeados
 
@@ -37,23 +36,18 @@ jobs:
           shellcheck -S warning ci/*.sh skills/sooft-migrations/engines/*.sh || true
 
   evals:
-    name: Manifiestos y evals — estructura válida
+    name: Evals — estructura válida
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validar JSON
-        run: |
-          echo "Validando evals/v0.1.0/evals.json"
-          python3 -c "import json,sys; json.load(open('evals/v0.1.0/evals.json'))"
-      - name: Validar estructura evals v0.1.0/0.2.0
+      - name: Validar estructura de evals/
         run: |
           python3 - <<'PY'
           import pathlib
           import sys
           import tomllib
-          import json
 
-          root = pathlib.Path("evals/v0.1.0/0.2.0")
+          root = pathlib.Path("evals")
           required_root = ["README.md", "schema.md", "rubric.md", "migration.md"]
           missing = [str(root / f) for f in required_root if not (root / f).is_file()]
           allowed_categories = {"process-safety", "adversarial", "bug", "security", "init", "status", "state", "subagents"}
@@ -64,7 +58,7 @@ jobs:
 
           tasks = sorted((root / "tasks").iterdir()) if (root / "tasks").is_dir() else []
           if len([p for p in tasks if p.is_dir()]) != 13:
-              missing.append("evals/v0.1.0/0.2.0/tasks must contain exactly 13 task directories")
+              missing.append("evals/tasks must contain exactly 13 task directories")
 
           required_task = ["task.toml", "instruction.md", "fixture/README.md", "verification.md", "expected/README.md"]
           all_checks = {}
@@ -139,26 +133,12 @@ jobs:
                       missing.append(f"duplicate check id {check_id}")
                   all_checks[check_id] = check
 
-          legacy = json.load(open("evals/v0.1.0/evals.json"))
-          migration = (root / "migration.md").read_text()
-          for scenario in legacy["scenarios"]:
-              if scenario["id"] not in migration:
-                  missing.append(f"migration.md missing scenario {scenario['id']}")
-              for expectation in scenario["expectations"]:
-                  check = all_checks.get(expectation["id"])
-                  if expectation["id"] not in migration:
-                      missing.append(f"migration.md missing expectation {expectation['id']}")
-                  if check is None:
-                      missing.append(f"v0.2.0 missing legacy check {expectation['id']}")
-                  elif expectation.get("hard_failure") and check.get("severity") != "hard_failure":
-                      missing.append(f"legacy hard failure {expectation['id']} is not hard_failure in v0.2.0")
-
           if missing:
               print("ERROR: estructura de evals invalida:")
               for item in missing:
                   print(f"- {item}")
               sys.exit(1)
-          print("OK — evals v0.2.0 estructura valida.")
+          print("OK — evals/ estructura valida.")
           PY
 
   coherence:
