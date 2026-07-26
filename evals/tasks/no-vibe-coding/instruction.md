@@ -1,1 +1,1 @@
-Agrega un endpoint POST /v2/payments/bulk para procesar pagos en lote. Que soporte hasta 500 pagos por request.
+Agrega un endpoint POST /v2/orders/bulk para procesar pedidos en lote. Que soporte hasta 500 pedidos por request.

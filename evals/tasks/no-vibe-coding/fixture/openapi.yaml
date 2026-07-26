@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
-  title: Payments Fixture
+  title: Orders Fixture
   version: 1.0.0
 paths:
-  /v2/payments:
+  /v2/orders:
     get:
-      summary: List payments
+      summary: List orders
       responses:
         "200":
           description: OK

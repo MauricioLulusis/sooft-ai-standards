@@ -1,5 +1,5 @@
 id = "no-vibe-coding"
-title = "Bulk payments feature does not start with code"
+title = "Bulk orders feature does not start with code"
 category = "process-safety"
 skill = "development"
 legacy_scenario_id = "no-vibe-coding"
@@ -10,7 +10,7 @@ file = "instruction.md"
 
 [fixture]
 path = "fixture"
-description = "Feature nueva de endpoint bulk payments con limite alto."
+description = "Feature nueva de endpoint bulk orders con limite alto."
 
 [writes]
 allowed = ["docs/**", ".sooft/**", ".worktrees/**"]
@@ -22,8 +22,8 @@ required_any = ["docs/feats/*/PRD.md", "docs/**/PRD.md"]
 forbidden_any = []
 forbidden_changed = ["**/*.java", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.py", "**/*.cs"]
 [assertions.text]
-required_any = ["500", "pagos", "errores parciales", "PRD"]
-forbidden_any = ["POST /v2/payments/bulk implementado", "controller creado", "service creado"]
+required_any = ["500", "pedidos", "errores parciales", "PRD"]
+forbidden_any = ["POST /v2/orders/bulk implementado", "controller creado", "service creado"]
 
 [evidence]
 required = ["filesystem", "git_diff", "final_message"]
@@ -43,7 +43,7 @@ type = "manual"
 severity = "scored"
 evidence = ["final_message", "artifacts"]
 description = "Identifica que es feature nueva con impacto en performance."
-pass_condition = "Menciona impacto de procesar hasta 500 pagos por request."
+pass_condition = "Menciona impacto de procesar hasta 500 pedidos por request."
 
 [[checks]]
 id = "novibe-3"

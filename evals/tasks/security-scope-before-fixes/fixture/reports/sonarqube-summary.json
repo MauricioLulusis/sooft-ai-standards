@@ -1,5 +1,5 @@
 {
-  "project": "payments-service",
+  "project": "orders-service",
   "summary": {
     "critical": 3,
     "high": 8

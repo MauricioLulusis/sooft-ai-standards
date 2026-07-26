@@ -1,11 +1,11 @@
-# PRD - Filtro de movimientos
+# PRD - Filtro de pedidos
 
 **Status:** Draft
 **Ticket:** TICKET-2468
 
 ## Problema
 
-El usuario necesita filtrar movimientos por rango.
+El usuario necesita filtrar pedidos por rango de fecha.
 
 ## Preguntas Abiertas
 
