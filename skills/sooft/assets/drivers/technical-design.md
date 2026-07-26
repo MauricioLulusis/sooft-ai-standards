@@ -17,7 +17,7 @@ Usalo después de tener el requerimiento analizado y antes de escribir código o
 ## Prompt
 
 ```
-Diseñá la solución técnica para el siguiente problema. Trabajás en un contexto de banca digital con stack Spring Boot / Java, Node.js y algunos frontends en React o Angular. El análisis estático (SAST/calidad) se ejecuta en el pipeline de CI.
+Diseñá la solución técnica para el siguiente problema. Trabajás en un contexto de desarrollo de software empresarial con stack Spring Boot / Java, Node.js y algunos frontends en React o Angular. El análisis estático (SAST/calidad) se ejecuta en el pipeline de CI.
 
 PROBLEMA A RESOLVER:
 ---
@@ -30,7 +30,7 @@ Producí el diseño técnico con las siguientes secciones:
 Una o dos oraciones que describan qué hay que resolver desde el punto de vista técnico, sin repetir todo el requerimiento.
 
 ### 2. Restricciones y condicionantes
-¿Qué limitaciones existen? Considerá: compatibilidad con sistemas existentes, restricciones de seguridad bancaria, límites de rendimiento, plazos, tecnologías fijas que no se pueden cambiar.
+¿Qué limitaciones existen? Considerá: compatibilidad con sistemas existentes, restricciones de seguridad y compliance del dominio, límites de rendimiento, plazos, tecnologías fijas que no se pueden cambiar.
 
 ### 3. Alternativas consideradas
 Para cada alternativa listá:

@@ -5,10 +5,9 @@
 #    Se dejó acá en ci/ para poder versionarlo sin ese scope.
 #
 # Valida la integridad del repo en cada cambio:
-# - sintaxis de los hooks .sh
-# - estructura de los manifiestos de plugin
-# - JSON bien formado (manifiestos legacy)
-# - estructura estatica de evals v0.2.0 (sin runner)
+# - sintaxis de los scripts .sh
+# - JSON bien formado (manifiestos de evals)
+# - estructura estatica de evals v0.1.0/0.2.0 (sin runner)
 # - ausencia de referencias a la metodología vieja
 # - ausencia de secretos hardcodeados
 
@@ -22,20 +21,20 @@ on:
 
 jobs:
   shellcheck:
-    name: Hooks (.sh) — sintaxis y shellcheck
+    name: Scripts (.sh) — sintaxis y shellcheck
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Verificar sintaxis bash
         run: |
-          for f in plugins/sooft/hooks/*.sh; do
+          for f in ci/*.sh skills/sooft-migrations/engines/*.sh; do
             echo "Verificando $f"
             bash -n "$f"
           done
       - name: Shellcheck
         run: |
           sudo apt-get update && sudo apt-get install -y shellcheck
-          shellcheck -S warning plugins/sooft/hooks/*.sh || true
+          shellcheck -S warning ci/*.sh skills/sooft-migrations/engines/*.sh || true
 
   evals:
     name: Manifiestos y evals — estructura válida
@@ -44,11 +43,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validar JSON
         run: |
-          for f in .claude-plugin/marketplace.json plugins/sooft/.claude-plugin/plugin.json evals/v0.1.0/evals.json; do
-            echo "Validando $f"
-            python3 -c "import json,sys; json.load(open('$f'))"
-          done
-      - name: Validar estructura evals v0.2.0
+          echo "Validando evals/v0.1.0/evals.json"
+          python3 -c "import json,sys; json.load(open('evals/v0.1.0/evals.json'))"
+      - name: Validar estructura evals v0.1.0/0.2.0
         run: |
           python3 - <<'PY'
           import pathlib
@@ -56,18 +53,18 @@ jobs:
           import tomllib
           import json
 
-          root = pathlib.Path("evals/v0.2.0")
+          root = pathlib.Path("evals/v0.1.0/0.2.0")
           required_root = ["README.md", "schema.md", "rubric.md", "migration.md"]
           missing = [str(root / f) for f in required_root if not (root / f).is_file()]
-          allowed_categories = {"process-safety", "adversarial", "bug", "security", "init", "status", "state"}
-          allowed_skills = {"development", "bugs", "security-remediation", "init", "status", "review", "next"}
+          allowed_categories = {"process-safety", "adversarial", "bug", "security", "init", "status", "state", "subagents"}
+          allowed_skills = {"development", "bugs", "security-remediation", "init", "status", "review", "next", "sooft"}
           allowed_check_types = {"deterministic", "transcript", "manual"}
           allowed_severities = {"hard_failure", "scored"}
           allowed_evidence = {"filesystem", "git_diff", "artifacts", "final_message", "transcript", "command_log", "stdout_stderr", "sooft_state"}
 
           tasks = sorted((root / "tasks").iterdir()) if (root / "tasks").is_dir() else []
-          if len([p for p in tasks if p.is_dir()]) != 10:
-              missing.append("evals/v0.2.0/tasks must contain exactly 10 task directories")
+          if len([p for p in tasks if p.is_dir()]) != 13:
+              missing.append("evals/v0.1.0/0.2.0/tasks must contain exactly 13 task directories")
 
           required_task = ["task.toml", "instruction.md", "fixture/README.md", "verification.md", "expected/README.md"]
           all_checks = {}
@@ -184,10 +181,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Escaneo básico de secretos
         run: |
-          # Excluye los hooks (contienen patrones de detección, no secretos reales)
+          # grep -vE "x{10,}" excluye placeholders documentales (ej. "AKIAxxxxxxxxxxxxxxxx")
           if grep -rniE "(AKIA[0-9A-Z]{16}|ghp_[a-zA-Z0-9]{36}|glpat-[a-zA-Z0-9]{20}|-----BEGIN [A-Z]+ PRIVATE KEY)" \
                --include="*.md" --include="*.sh" --include="*.json" . \
-               | grep -v "plugins/sooft/hooks/" | grep -vE "x{10,}"; then
+               | grep -vE "x{10,}"; then
             echo "ERROR: posible secreto hardcodeado."
             exit 1
           fi

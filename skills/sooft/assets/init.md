@@ -174,7 +174,7 @@ Con toda la información recolectada, escribí los dos archivos.
   "target_branch": "<rama configurada o inferida>",
   "worktree_root": ".worktrees",
   "integrations": {
-    "tracker": "<servicenow|jira|github|none|unknown>",
+    "tracker": "<jira|github|azure-devops|linear|none|unknown>",
     "repository": "<git|unknown>",
     "docs": "<confluence|none|unknown>"
   },
@@ -207,7 +207,7 @@ Con toda la información recolectada, escribí los dos archivos.
 > (`archetypes/node.manifest.yml` para Node, `archetypes/java.manifest.yml` para Java,
 > `archetypes/dotnet.manifest.yml` para .NET)
 > a partir de la evidencia detectada (scope en `package.json` y versión de Node, `<parent>` del
-> `pom.xml` y `java.version`, o `<PackageReference>` a `el paquete base del arquetipo`/`el paquete base del arquetipo` en un
+> `pom.xml` y `java.version`, o `<PackageReference>` a `<paquete-base-pom>`/`<paquete-base-paas>` en un
 > `.csproj` y `<TargetFramework>`). En el init podés
 > dejarlo precargado si ya lo inferiste (ej. `node-original`, `conjunto de librerías-web-v2`, `dotnet-paas`); si no, queda
 > `null` y lo resuelve el discovery la primera vez. **La regla es traer SOLO el contexto del stack
@@ -311,15 +311,15 @@ SOOFT activo, ya podés trabajar → /sooft-development · /sooft-bugs · /sooft
 apenas ve el reporte. Si alguna integración quedó como `unknown`, mencionalo en una línea y seguí:
 se configura después editando `.sooft/config.json`.
 
-> **Si en una sesión las tools del MCP no aparecen, NUNCA lo trates como un gate ni como un error
-> del init.** El CLI registra las tools del MCP **al iniciar la sesión**: si el server se levantó
-> recién (durante `/sooft`), esta sesión todavía no las tiene. Para tomarlas, **abrí una sesión nueva
-> del CLI** y aceptá la confianza en la fuente MCP la primera vez — no hace falta reinstalar ni
-> reconfigurar nada. Mientras tanto **no bloquees**: si el developer pega el contenido del ticket,
-> arrancás el discovery con eso. Solo si falta el `.mcp.json` se registra a mano: `/mcp add` abre un
-> **formulario** (Tab entre campos, Ctrl+S para guardar; no toma la URL en la misma línea) o, desde
-> la shell, `copilot mcp add servicenow --type http --url "<URL>" --tools "*"` (headers vacíos — un
-> `Authorization: Bearer` rompe con 401).
+> **Si el proyecto tiene un servidor MCP configurado y sus tools no aparecen en una sesión, NUNCA lo
+> trates como un gate ni como un error del init.** El CLI registra las tools del MCP **al iniciar la
+> sesión**: si el server se levantó recién (durante `/sooft` o al agregarlo), esta sesión todavía no
+> las tiene. Para tomarlas, **abrí una sesión nueva del CLI** y aceptá la confianza en la fuente MCP
+> la primera vez — no hace falta reinstalar ni reconfigurar nada. Mientras tanto **no bloquees**: si
+> el developer pega el contenido del ticket, arrancás el discovery con eso. El registro manual de un
+> servidor se hace con `/mcp add` (abre un **formulario** — Tab entre campos, Ctrl+S para guardar; no
+> toma la URL en la misma línea) o, desde la shell, `copilot mcp add <nombre-del-tracker> --type http
+> --url "<URL>" --tools "*"` (headers vacíos salvo que el server requiera auth).
 
 ---
 

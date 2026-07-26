@@ -6,7 +6,9 @@ El corazón es **SOOFT** (Sooft Engineering AI Rails): la metodología que impon
 
 ---
 
-## Los 3 principios
+## Los 3 principios (síntesis)
+
+> Esta es la síntesis operativa para quien recién llega. El detalle completo son los **9 principios fundacionales** más abajo — estos 3 son cómo se perciben en el día a día, no un set alternativo.
 
 **1. Sin vibe coding**
 El agente no escribe una línea de código sin un PLAN aprobado. Sin aprobación explícita del developer, no avanza.
@@ -67,13 +69,15 @@ El sesgo sigue siendo conservador: ante cualquier señal de seguridad o arquitec
 | Comando | Cuándo usarlo |
 |---|---|
 | `/sooft` | Inicializar el proyecto por primera vez (crea `.sooft/state.json`) |
-| `/sooft-development` | Feature nueva o migración — carga el skill de desarrollo |
+| `/sooft-development` | Feature nueva o refactor — carga el skill de desarrollo |
+| `/sooft-migrations` | Migrar de versión o tecnología (Java 8→21, Node, .NET) — carga el skill de migraciones |
 | `/sooft-bugs` | Bug reportado o reproducible — carga el skill de bugs |
 | `/sooft-security-remediation` | Vulnerabilidad o hallazgo de SAST/análisis estático — carga el skill de seguridad |
 | `/sooft-status` | Consultar la fase actual del pipeline, artefactos y bloqueos |
 | `/sooft-incident-response` | Incidente en producción que requiere hotfix urgente |
+| `/sooft-checkpoint` | Forzar un snapshot de `STATUS.md` sin cambiar de fase (compaction manual) |
 
-Estos **6 son los únicos slash commands** que invoca el developer. La revisión pre-PR (validación de seguridad, arquitectura y tests) corre **dentro** del flujo de cada router, no como comando aparte. Los skills se cargan solo cuando se necesitan; también se puede interactuar en lenguaje natural y el agente identifica la fase y el skill correcto.
+Estos **8 son los únicos slash commands** que invoca el developer. La revisión pre-PR (validación de seguridad, arquitectura y tests) corre **dentro** del flujo de cada router, no como comando aparte. Los skills se cargan solo cuando se necesitan; también se puede interactuar en lenguaje natural y el agente identifica la fase y el skill correcto.
 
 ---
 
@@ -137,8 +141,8 @@ sooft-ai-standards/
 │   │       │                           adr, test-strategy, release, maintenance
 │   │       ├── init.md               → init de .sooft/, detección de stack/integraciones, MCP
 │   │       └── banner.txt + sooft.json → hook sessionStart (banner + trigger)
-│   ├── sooft-development/ · sooft-bugs/ · sooft-security-remediation/   → routers
-│   ├── sooft-status/ · sooft-incident-response/   → skills developer-invocables
+│   ├── sooft-development/ · sooft-bugs/ · sooft-security-remediation/ · sooft-migrations/   → routers
+│   ├── sooft-status/ · sooft-incident-response/ · sooft-checkpoint/   → skills developer-invocables
 │   └── Readme.md                     → índice de skills e instalación (npx skills add)
 ├── evals/                            → evaluaciones de comportamiento del agente (gate-safety)
 └── ci/                               → configuración de integración continua (validate.yml)
@@ -239,8 +243,8 @@ Formato del archivo:
 {
   "phase": "VALIDATING",
   "type": "feat",
-  "ticket": "TICKET-2045",
-  "owner": "mauricio.lulusis",
+  "ticket": "TICKET-XXXXX",
+  "owner": "<email o legajo del developer>",
   "created_at": "2026-06-02",
   "last_step": "implement",
   "next_step": "run-validations"

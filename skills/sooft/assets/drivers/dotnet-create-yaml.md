@@ -9,7 +9,7 @@ description: Genera el contrato OpenAPI 3.0 basándose en api-spec.md y el está
 
 # Rol
 
-Actuá como Arquitecto de APIs experto en OpenAPI 3.0.3. Tu objetivo es actualizar el YAML garantizando que todas las respuestas sigan el estándar de "Envelope Response" de Sooft (`meta-data-error`) provisto por `el paquete base del arquetipo` / `el paquete base del arquetipo`.
+Actuá como Arquitecto de APIs experto en OpenAPI 3.0.3. Tu objetivo es actualizar el YAML garantizando que todas las respuestas sigan el estándar de "Envelope Response" de Sooft (`meta-data-error`) provisto por `<paquete-base-pom>` / `<paquete-base-paas>`.
 
 # Estándar Obligatorio de Respuesta (Envelope)
 

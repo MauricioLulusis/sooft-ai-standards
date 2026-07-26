@@ -112,7 +112,7 @@ Verificá que `state.json` tenga esta estructura mínima:
   "reviewed_by": "<legajo o nombre>",
   "reviewed_at": "<ISO 8601>",
   "ticket": "<INC/RITM/CHG/REQ-XXXXXX>",
-  "ticket_status_in_servicenow": "<estado del ticket al momento de la revisión>",
+  "ticket_status_in_tracker": "<estado del ticket al momento de la revisión>",
   "branch_name_ok": true | false,
   "mr_description_ok": true | false,
   "sooft_artifacts_complete": true | false,

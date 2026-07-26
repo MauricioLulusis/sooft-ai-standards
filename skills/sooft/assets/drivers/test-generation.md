@@ -49,7 +49,7 @@ Generá los tests con las siguientes reglas:
    - Java Spring Boot: JUnit 5 + Mockito + AssertJ. Si hay contexto de Spring, usá @SpringBootTest o @WebMvcTest según corresponda.
    - Node.js: Jest. Para HTTP, usá supertest si aplica.
 
-5. Los mocks tienen que ser realistas: no uses "foo", "bar" ni datos genéricos. Usá datos que parezcan reales del dominio bancario (montos, cuentas, fechas, estados de transacción) pero que no sean datos reales de producción.
+5. Los mocks tienen que ser realistas: no uses "foo", "bar" ni datos genéricos. Usá datos que parezcan reales del dominio de negocio del proyecto (montos, IDs, fechas, estados) pero que no sean datos reales de producción.
 
 6. Al final, incluí una sección llamada "Escenarios no cubiertos" donde listés casos que serían importantes testear pero que no podés generar sin más contexto (por ejemplo: tests de performance, tests que requieren datos de producción, integraciones con sistemas de Sooft que no están disponibles en el código dado).
 

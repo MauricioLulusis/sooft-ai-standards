@@ -31,7 +31,7 @@ que el workspace del developer no se toca, independientemente del modelo de fork
 |---|---|---|---|---|
 | **A-Java** | mismo stack Java/Spring, distinta versión (Java 8→21, Spring Boot 2→3) | `agents/java-migration-agent.md` | Motor AST OpenRewrite + build-and-fix loop | Tests existentes 100% verde + `ApplicationContext` levanta |
 | **A-Node** | mismo stack Node/NestJS, distinta versión (Node 14→20, NestJS 9→10, arquetipo deprecado→actual) | `agents/node-migration-agent.md` | `npm-check-updates` + jscodeshift (cuando aplica) + build-and-fix loop | Tests existentes 100% verde + `/liveness` y `/manifest` responden |
-| **A-.NET** | mismo stack .NET/ASP.NET Core, distinta versión (.NET Core 3.1→.NET 8, `el paquete base anterior`→`el paquete base del arquetipo`, `el paquete base anterior`→`el paquete base del arquetipo`) | `agents/dotnet-migration-agent.md` | `dotnet` CLI + reescritura `Startup.cs`→`Program.cs` + renames mecánicos (`API:*`→`SERVICES:DATAS:*`, `Newtonsoft.Json`→`System.Text.Json`, `ParentException`→`BaseException`) + build-and-fix loop | Tests existentes 100% verde + Swagger del arquetipo responde en `/swagger` + healthchecks del arquetipo responden |
+| **A-.NET** | mismo stack .NET/ASP.NET Core, distinta versión (.NET Core 3.1→.NET 8, `<paquete-legacy-pom>`→`<paquete-base-pom>`, `<paquete-legacy-paas>`→`<paquete-base-paas>`) | `agents/dotnet-migration-agent.md` | `dotnet` CLI + reescritura `Startup.cs`→`Program.cs` + renames mecánicos (`API:*`→`SERVICES:DATAS:*`, `Newtonsoft.Json`→`System.Text.Json`, `ParentException`→`BaseException`) + build-and-fix loop | Tests existentes 100% verde + Swagger del arquetipo responde en `/swagger` + healthchecks del arquetipo responden |
 | **B — Port** | distinta tecnología (Java→C#, Node→Java, etc.) | `agents/language-migration-agent.md` | Traducción guiada módulo por módulo en el toolchain destino. Sin motor AST — costo alto en tokens; el PLAN debe ser granular. | Tests portados al stack destino en verde + comportamiento observable equivalente |
 
 PROHIBIDO asumir la clase de entrada: sale de **origen+destino confirmados** en el discovery.
@@ -76,8 +76,8 @@ con opciones (formato `AskUserQuestion`):
 1. **Stack y versión de origen.** Tomarlos de `.sooft/` y presentarlos como confirmación. Si el
    init no los dejó, inferirlos de la evidencia del proyecto:
    - Java: `pom.xml` / `build.gradle` → `<java.version>`, `<maven.compiler.*>`, `<parent>`.
-   - Node: `package.json` → `engines.node`, scopes `@las librerías compartidas del proyecto*`, versión de NestJS.
-   - .NET: `*.csproj` → `<TargetFramework>` (`netcoreapp3.1` vs `net8.0`), `<PackageReference>` a `el paquete base anterior` / `el paquete base anterior` / `el paquete base del arquetipo` / `el paquete base del arquetipo`.
+   - Node: `package.json` → `engines.node`, scope de las librerías compartidas del proyecto (ej. `@<org>/*`), versión de NestJS.
+   - .NET: `*.csproj` → `<TargetFramework>` (`netcoreapp3.1` vs `net8.0`), `<PackageReference>` a `<paquete-legacy-pom>` / `<paquete-legacy-paas>` (origen) o `<paquete-base-pom>` / `<paquete-base-paas>` (destino).
    Proponerlos precargados para confirmación.
 2. **Stack de destino.** Si es el mismo que el origen → clase **A** (upgrade, sub-clasificar por stack).
    Si es distinto → clase **B** (port).

@@ -1,6 +1,8 @@
 # Estado local de SOOFT (se genera al usar el plugin en un proyecto)
-.sooft/
-.worktrees/
+# Anclado a la raíz: no debe tapar fixtures de evals que materializan .sooft/ a propósito
+# (ej. evals/**/tasks/*/fixture/.sooft/state.json).
+/.sooft/
+/.worktrees/
 
 # Dependencias
 node_modules/

@@ -4,7 +4,7 @@ mode: agent
 
 # Script para generar tests
 
-Sos un asistente experto en testing para microservicios .NET 8 + ASP.NET Core con arquetipos de Sooft (`el paquete base del arquetipo` / `el paquete base del arquetipo`).
+Sos un asistente experto en testing para microservicios .NET 8 + ASP.NET Core con arquetipos de Sooft (`<paquete-base-pom>` / `<paquete-base-paas>`).
 Tu tarea es generar o actualizar tests de alta calidad para la clase/método indicado, respetando stack, versiones y convenciones del proyecto actual.
 
 ## Objetivo

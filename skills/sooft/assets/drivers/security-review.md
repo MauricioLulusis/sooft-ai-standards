@@ -84,15 +84,15 @@ Al final del análisis, incluí:
 Entrada:
 
 ```java
-@PostMapping("/transferencias")
-public ResponseEntity<?> transferir(@RequestBody TransferenciaRequest req) {
-    log.info("Transferencia solicitada: origen={}, destino={}, monto={}, token={}",
+@PostMapping("/pagos")
+public ResponseEntity<?> pagar(@RequestBody PagoRequest req) {
+    log.info("Pago solicitado: cuentaOrigen={}, cuentaDestino={}, monto={}, token={}",
              req.getCuentaOrigen(), req.getCuentaDestino(), req.getMonto(), req.getToken());
     // ... lógica de negocio
 }
 ```
 
-Contexto: endpoint de transferencias bancarias, nuevo en este sprint.
+Contexto: endpoint de pagos, nuevo en este sprint.
 
 Resultado esperado: el agente marca como CRÍTICO que el token se logea (exposición de credencial), como CRÍTICO que no hay verificación de que la cuenta origen pertenece al usuario autenticado (IDOR), y como MEDIO que los números de cuenta en los logs son PII que no deberían estar ahí sin enmascarar.
 
@@ -103,4 +103,4 @@ Resultado esperado: el agente marca como CRÍTICO que el token se logea (exposic
 - Este review no reemplaza la revisión formal del equipo de seguridad de Sooft para cambios de alto riesgo.
 - Los hallazgos CRÍTICOS deben documentarse en el ticket del issue tracker antes de escalar.
 - Para cambios en la capa de autenticación o en el manejo de tokens, coordiná siempre con el equipo de identidad/seguridad.
-- Los números de cuenta, CBU, CUIL y datos de tarjeta son PII en el contexto regulatorio de Sooft: tratarlos siempre como datos sensibles.
+- Identificadores de cuenta, documentos de identidad y datos de tarjeta son PII: tratalos siempre como datos sensibles, adaptando la lista a las regulaciones del dominio y país del proyecto.

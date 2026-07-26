@@ -2,7 +2,7 @@
 
 Esta suite reemplaza a `evals/v0.1.0/` como formato vigente. `v0.1.0` queda como referencia historica y su migracion esta trazada en `migration.md`.
 
-La suite evalua comportamiento del agente: gates, discovery, artefactos, no invencion, seguridad de proceso y resistencia a prompts adversariales. No evalua funcionalidad bancaria real y no incluye runner propio.
+La suite evalua comportamiento del agente: gates, discovery, artefactos, no invencion, seguridad de proceso y resistencia a prompts adversariales. No evalua funcionalidad de negocio real y no incluye runner propio.
 
 ## Como consumir una task
 

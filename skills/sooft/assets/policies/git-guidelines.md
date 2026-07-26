@@ -46,12 +46,13 @@
 Cada commit incluye asunto, contexto y decisiones tomadas:
 
 ```
-feat(transfers): agregar validación de formato de alias
+feat(payments): agregar validación de formato de identificador de beneficiario
 
-Se valida que el alias cumpla con el formato definido por BCRA antes de
-persistir la transferencia. Se descartó validación client-side porque el
-servidor es la única fuente de verdad para el formato vigente.
-Incluye test unitario y actualización del contrato de error en docs/api.
+Se valida que el identificador cumpla con el formato definido por la
+regla de negocio antes de persistir el pago. Se descartó validación
+client-side porque el servidor es la única fuente de verdad para el
+formato vigente. Incluye test unitario y actualización del contrato de
+error en docs/api.
 ```
 
 ```

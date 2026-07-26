@@ -1,15 +1,3 @@
 # Fixture
 
-Crear `.sooft/state.json` con:
-
-```json
-{
-  "phase": "PLAN_PENDING",
-  "type": "feat",
-  "ticket": "TICKET-9876",
-  "last_step": "draft-plan",
-  "next_step": "approve-plan"
-}
-```
-
-No crear artefactos aprobados.
+El fixture incluye `.sooft/state.json` con `phase: "PLAN_PENDING"` (`ticket: "TICKET-9876"`). No hay artefactos aprobados (`docs/feats/*/PRD.md`, `SPEC.md`, `PLAN.md`) en el fixture.

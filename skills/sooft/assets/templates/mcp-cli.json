@@ -1,9 +1,3 @@
 {
-  "mcpServers": {
-    "servicenow": {
-      "type": "http",
-      "url": "https://storiesnow-mcp-devx-devextools-int.apps.paas-stg.sooft.com.ar/mcp",
-      "tools": ["*"]
-    }
-  }
+  "mcpServers": {}
 }

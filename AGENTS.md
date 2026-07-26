@@ -52,11 +52,13 @@ El developer tiene dos formas de activarte:
 
 ```
 /sooft                          → inicializa el proyecto
-/sooft-development <descripción>     → feature, migración o refactor
+/sooft-development <descripción>     → feature nueva o refactor
+/sooft-migrations <descripción>      → migrar de versión o tecnología (Java, Node, .NET)
 /sooft-bugs <descripción>            → bug reportado o regresión
 /sooft-security-remediation          → vulnerabilidad o hallazgo de seguridad
 /sooft-status                        → estado actual del pipeline
 /sooft-incident-response             → incidente en producción (hotfix)
+/sooft-checkpoint                    → forzar un snapshot de STATUS.md sin cambiar de fase
 ```
 
 Estos son los **únicos** slash commands que el developer invoca. Las primitivas
@@ -202,8 +204,8 @@ Al inicio de cada sesión leés `.sooft/PRINCIPLES.md` si existe: son los princi
 ```json
 {
   "phase": "PLAN_APPROVED",
-  "ticket": "TICKET-12345",
-  "owner": "mauricio.lulusis",
+  "ticket": "TICKET-XXXXX",
+  "owner": "<email o legajo del developer>",
   "created_at": "2026-05-29",
   "last_step": "approve-plan",
   "next_step": "implement"

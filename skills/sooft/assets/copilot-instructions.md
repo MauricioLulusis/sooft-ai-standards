@@ -232,10 +232,10 @@ Cuando se dispare:
    - **Preguntá solo lo no inferible** (hasta 5, una ronda, con opciones). **No preguntes el nivel de gates**: SOOFT es siempre `strict` (invariante, no preferencia).
    - **Creá `.sooft/`** con `config.json` (version, project, target_branch, worktree_root `.worktrees`, integrations, validation, `gate_strictness: "strict"` fijo) y `state.json` (`phase: "IDLE"`, ticket, owner, created_at hoy ISO-8601, last_step `init`).
    - **Asegurá el `.gitignore` del proyecto**: mergeá (sin pisar lo existente) `.sooft/`, `.worktrees/` y `.agents/` — es estado **local y efímero** de SOOFT que NO se commitea. Si queda trackeado, `git worktree add` lo materializa en **cada** worktree (un worktree es un checkout completo del árbol trackeado) y bifurca el estado. Si `.sooft/` o `.worktrees/` ya están trackeados, destrackealos sin borrar la copia de trabajo: `git rm -r --cached .sooft .worktrees`. **`docs/` NO se ignora**: es el rastro de auditoría (principio #9) y se trackea a propósito (que aparezca en un worktree es Git normal e inofensivo).
-   - **Configurá el MCP del issue tracker (agnóstico al IDE)**: escribí (o mergeá, sin pisar otros servers) **`.mcp.json` en la raíz** para el CLI —clave `mcpServers`, server `servicenow` con `"type":"http"`, `"url":"https://storiesnow-mcp-devx-devextools-int.apps.paas-stg.sooft.com.ar/mcp"` y `"tools":["*"]`—. El server no tiene auth hoy → sin tokens, `inputs` ni headers (un `Authorization: Bearer` rompe con 401). Es config de tooling, no código: no dispara gates. SOOFT no crea carpetas ni archivos específicos de ningún IDE (`.vscode/`, `.idea/`, etc.).
-   - **Mostrá un reporte breve (3-4 líneas, sin bloques largos)**: proyecto · stack · rama · gates; una línea con las integraciones detectadas + archivos creados (`.sooft/`, `.gitignore`, `.mcp.json`, hooks de Copilot); una línea del MCP del issue tracker (arranca solo en el CLI al leer `.mcp.json`; aceptá la confianza la primera vez); y los próximos pasos (`/sooft-development`, `/sooft-migrations`, `/sooft-bugs`, `/sooft-security-remediation`).
+   - **MCP del issue tracker (agnóstico al IDE, opcional)**: SOOFT no impone ningún servidor por defecto. Si `.mcp.json` no existe en la raíz, creálo con la estructura base vacía (`{"mcpServers": {}}`); si ya existe, dejalo como está (mergeá, sin pisar otros servers). Cuando el equipo agregue su propio servidor MCP (issue tracker, base de conocimiento, API interna), va dentro de `mcpServers`; nunca se hardcodean secretos: tokens por variables de entorno o `inputs` con `password: true`. Es config de tooling, no código: no dispara gates. SOOFT no crea carpetas ni archivos específicos de ningún IDE (`.vscode/`, `.idea/`, etc.).
+   - **Mostrá un reporte breve (3-4 líneas, sin bloques largos)**: proyecto · stack · rama · gates; una línea con las integraciones detectadas + archivos creados (`.sooft/`, `.gitignore`, `.mcp.json`, hooks de Copilot); una línea del MCP del issue tracker si el proyecto tiene uno configurado (arranca solo en el CLI al leer `.mcp.json`; aceptá la confianza la primera vez); y los próximos pasos (`/sooft-development`, `/sooft-migrations`, `/sooft-bugs`, `/sooft-security-remediation`).
    - **Sin gate de cierre — no pares ni esperes confirmación del MCP.** El developer ya puede arrancar cualquier flujo apenas ve el reporte.
-   - **Si las tools del MCP no aparecen en esta sesión (la misma donde recién corriste `/sooft`), NUNCA lo trates como un gate ni como un error.** El CLI registra las tools del MCP **al iniciar la sesión**: si el server se levantó durante `/sooft`, esta sesión todavía no las tiene. **SOLO en este caso** — sugerí abrir una sesión nueva del CLI y aceptar la confianza la primera vez. Mientras tanto **no bloquees**: si el developer pega el contenido del ticket, arrancás el discovery con eso. **CIRCUIT BREAKER — OBLIGATORIO:** si el developer ya abrió una sesión nueva y las tools siguen sin aparecer, **NUNCA repitas el consejo de abrir otra sesión** — el problema ya no es de caché sino de entorno (servidor no alcanzable desde la red del developer); en ese caso pedí que pegue el contenido del ticket y seguí sin el MCP. Solo si falta el `.mcp.json` se registra a mano —`/mcp add` abre un formulario (Tab/Ctrl+S) o `copilot mcp add servicenow --type http --url "<URL>" --tools "*"`, siempre con headers vacíos—. Detalle en `skills/sooft/assets/init.md`.
+   - **Si el proyecto tiene un servidor MCP configurado y sus tools no aparecen en esta sesión (la misma donde recién corriste `/sooft` o agregaste el server), NUNCA lo trates como un gate ni como un error.** El CLI registra las tools del MCP **al iniciar la sesión**: si el server se levantó recién, esta sesión todavía no las tiene. **SOLO en este caso** — sugerí abrir una sesión nueva del CLI y aceptar la confianza la primera vez. Mientras tanto **no bloquees**: si el developer pega el contenido del ticket, arrancás el discovery con eso. **CIRCUIT BREAKER — OBLIGATORIO:** si el developer ya abrió una sesión nueva y las tools siguen sin aparecer, **NUNCA repitas el consejo de abrir otra sesión** — el problema ya no es de caché sino de entorno (servidor no alcanzable desde la red del developer); en ese caso pedí que pegue el contenido del ticket y seguí sin el MCP. El registro manual de un servidor se hace con `/mcp add` (abre un formulario, Tab/Ctrl+S) o `copilot mcp add <nombre-del-tracker> --type http --url "<URL>" --tools "*"`, siempre con headers vacíos salvo que el server lo requiera. Detalle en `skills/sooft/assets/init.md`.
 
 > El detalle largo vive en `skills/sooft/assets/prompts/sooft.prompt.md` (lo usa la GUI de VS Code), pero en el CLI **no lo abras**: con los pasos de arriba alcanza y evitás el log de lectura de archivo.
 
@@ -270,6 +270,41 @@ Esto **no** arranca un workflow de feature/bug/seguridad: solo prepara el entorn
 ## Trazabilidad del código IA
 
 Marcá todo código que generes con `// [IA-generated] SOOFT — revisar antes de mersooft. Ticket: <TICKET-XXXXX>`. El developer lo revisa y aprueba antes del PR. La IA propone; el developer es responsable.
+
+Además del marcador `[IA-generated]`, el agente produce un **artefacto de autoevaluación** (`SELF-REVIEW.md`) que es input **bloqueante** del gate 4:
+
+- Durante `IMPLEMENTING`, mantenés `.sooft/self-review-scratchpad.md` (working memory, efímero, no versionado) con una entrada por cada tarea del PLAN completada.
+- Al final de `VALIDATING` consolidás el sketchpad en `docs/{tipo}/{slug}/SELF-REVIEW.md` (feat → `docs/feats/`, bug → `docs/bugs/`, security → `docs/security/`) siguiendo el template `skills/sooft/assets/self-review-template.md`. Cinco secciones obligatorias: cobertura (con IDs `[T0XX]` del PLAN), limitaciones, riesgos, nivel de confianza (`alto`/`medio`/`bajo` con reglas anti-gaming) y señales objetivas (tests, cobertura, lint, SAST). Detalle en el recurso `internal/sooft-validation.md` de `sooft`.
+- Sin `SELF-REVIEW.md` completo y consistente el gate 4 no se abre. Un artefacto incompleto vuelve el flujo a `IMPLEMENTING` o queda `BLOCKED`.
+
+---
+
+## Persistencia y compaction del estado del proyecto
+
+Además de `state.json` (pointer runtime), `evidence.md` (diario cronológico) y `SELF-REVIEW.md` (entregable de gate 4), el agente mantiene un **snapshot semántico compacto rehidratable** en `docs/{tipo}/{slug}/STATUS.md`. Contrato en `skills/sooft/assets/status-template.md`.
+
+### Compaction automática en transiciones
+
+En cada transición de fase de la máquina de estados, además de actualizar `state.json` y `evidence.md`:
+
+- Actualizás in-place `docs/{tipo}/{slug}/STATUS.md` (7 secciones obligatorias: metadatos, resumen, decisiones, artefactos aprobados, riesgos abiertos, progreso PLAN, próximo paso).
+- Escribís una copia efímera en `.sooft/status/YYYY-MM-DDTHH-MM.md` (formato Windows-friendly, sin `:`).
+- Aplicás retención FIFO=10 sobre `.sooft/status/`. Snapshots de gates aprobados se mueven a `.sooft/status/gates/` y **no rotan**.
+- Verificás coherencia dura: `STATUS.md.phase == state.json.phase` (RF-05 anti-drift). Divergencia → HALT y reporte.
+- Nunca escribís contenido prohibido en `STATUS.md`: PII, secretos, transcripts crudos, stack traces.
+
+### Resume flow al inicio de sesión
+
+Si `state.json.phase != IDLE`:
+
+1. Leés `state.json` + `docs/{tipo}/{slug}/STATUS.md`.
+2. Reportás máximo 8 líneas: ticket, fase, decisiones clave (últimas 3), próximo paso.
+3. Confirmás explícitamente con el developer antes de seguir: *"Estamos en `<fase>` sobre `<ticket>`. Próximo paso: `<next_step>`. ¿Sigo?"*
+4. Si `STATUS.md` no existe (workflow legacy pre-TICKET-2045), ofrecés backfill opt-in explícito — nunca automático.
+
+### Compaction manual on-demand
+
+El developer puede invocar `/sooft-checkpoint` en cualquier momento para forzar un snapshot sin cambiar la fase. Skill: `skills/sooft-checkpoint/SKILL.md`.
 
 Si un cambio altera comportamiento documentado del proyecto (contratos públicos, comandos, instalación, estructura o uso descrito en el README u otra doc), la actualización de esa doc va como **tarea explícita del PLAN**, no como un paso suelto. Los cambios internos sin impacto en la doc no la tocan.
 

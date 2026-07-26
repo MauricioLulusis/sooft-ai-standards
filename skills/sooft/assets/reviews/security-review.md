@@ -28,11 +28,11 @@ abrirse hasta que se resuelva.
 
 ## Datos personales (PII)
 
-- [ ] Los datos personales de clientes (DNI, CUIL, nombre, dirección, teléfono, email,
-      datos financieros) no se loguean en texto plano. Si es necesario loguear para
+- [ ] Los datos personales de clientes (documento de identidad, nombre, dirección, teléfono,
+      email, datos financieros) no se loguean en texto plano. Si es necesario loguear para
       diagnóstico, usá masking (ej: `****1234` para el último bloque de un número).
-- [ ] Los datos personales no se exponen en URLs (query params o path params con DNI,
-      número de cuenta, etc.). Tienen que ir en el body de la request.
+- [ ] Los datos personales no se exponen en URLs (query params o path params con documento
+      de identidad, número de cuenta, etc.). Tienen que ir en el body de la request.
 - [ ] Si el cambio almacena datos personales en una base de datos nueva o en un campo nuevo,
       confirmá que ese almacenamiento está dentro del scope del tratamiento de datos
       aprobado para ese sistema.
@@ -74,8 +74,9 @@ abrirse hasta que se resuelva.
 - [ ] Todos los inputs que vienen de fuera del sistema (request body, query params, path
       params, headers, mensajes de colas) son validados antes de procesarse. No se asume
       que el input es correcto porque viene de un sistema "confiable".
-- [ ] Las validaciones de tipos y rangos están presentes: si un campo es un número de cuenta
-      de 11 dígitos, se valida que sea exactamente eso, no que sea un string cualquiera.
+- [ ] Las validaciones de tipos y rangos están presentes: si un campo tiene un formato fijo
+      (ej. un identificador de N dígitos), se valida que sea exactamente eso, no que sea un
+      string cualquiera.
 - [ ] No hay construcción de queries SQL o comandos de sistema a partir de inputs sin
       parametrización. Usá prepared statements o el ORM. Si ves concatenación de strings
       en una query, es un bloqueante.

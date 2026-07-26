@@ -31,8 +31,8 @@ No es una revisión de estilo ni de tests — eso está cubierto en `testing-rev
       justificadas. Para cada dependencia nueva preguntá: ¿hay algo ya en el proyecto que
       cubre esto? ¿Es una librería aprobada por la organización o hay que validarla?
 - [ ] No se introdujeron dependencias circulares entre módulos o paquetes.
-- [ ] Las dependencias hacia servicios externos (APIs de terceros, sistemas internos del
-      banco) están encapsuladas detrás de una interfaz o adaptador. El código de negocio
+- [ ] Las dependencias hacia servicios externos (APIs de terceros, sistemas internos de la
+      organización) están encapsuladas detrás de una interfaz o adaptador. El código de negocio
       no debería tener llamadas directas a HTTP o a SDKs externos sin una capa de
       abstracción intermedia.
 - [ ] Si se agrega una dependencia a un servicio interno de Sooft, confirmá que ese servicio
