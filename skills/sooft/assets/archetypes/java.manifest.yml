@@ -1,0 +1,50 @@
+# Manifest de ruteo de arquetipo — stack Java + Spring Boot.
+# Consumido por skills/sooft/internal/sooft-discovery.md §1.a durante el discovery.
+# Rutas de `load`/`on_demand` son relativas a este directorio (skills/sooft/assets/archetypes/).
+#
+# A diferencia de dotnet.manifest.yml (dotnet-pom/dotnet-paas) y node.manifest.yml
+# (node-original/node-lite), ningún archivo del repo documenta dos variantes de arquetipo Java:
+# archetypes/backend-service/java/README.md describe un único arquetipo genérico Spring Boot. La
+# única pista de un paquete interno es el rename `pom.commons.starter.*` -> `pom.commons.neo.starter.*`
+# en sooft-migrations/agents/java-migration-agent.md, insuficiente para partir esto en dos con
+# confianza. Este es el único de los 3 manifests con un solo archetype id — ajustar si aparece
+# evidencia de una segunda variante real.
+
+detection_order:
+  - java-spring
+
+archetypes:
+  java-spring:
+    label: Arquetipo backend Java + Spring Boot
+    detect:
+      # Señal fuerte: placeholder redactado — sin precedente del nombre real del parent Maven interno
+      # de Sooft en el repo (ver nota arriba).
+      maven_parents:
+        - <parent-pom-sooft>
+      # Señal de apoyo.
+      java_version: "21"
+    load:
+      - backend-service/java/README.md
+      - backend-service/java/tech-stack.md
+      - backend-service/golden-rules.md
+    on_demand:
+      http_client:
+        - backend-service/java/README.md
+      new_project:
+        - backend-service/java/README.md
+      migration:
+        - ../../../sooft-migrations/agents/java-migration-agent.md
+      tests:
+        - ../drivers/java-create-tests.md
+      swagger:
+        - ../drivers/java-create-yaml.md
+    # provides/requires/absent: sin precedente literal en el repo — valores plausibles a ajustar
+    # con el detalle real del parent interno cuando esté disponible.
+    provides:
+      - envelope-response
+      - health-checks
+      - http-client-resilience
+      - otel-tracing
+    requires:
+      - java-21-lts
+    absent: []

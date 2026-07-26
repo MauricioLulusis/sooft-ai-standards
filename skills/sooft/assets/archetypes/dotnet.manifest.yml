@@ -1,0 +1,76 @@
+# Manifest de ruteo de arquetipo — stack .NET / ASP.NET Core.
+# Consumido por skills/sooft/internal/sooft-discovery.md §1.a durante el discovery.
+# Rutas de `load`/`on_demand` son relativas a este directorio (skills/sooft/assets/archetypes/).
+
+detection_order:
+  - dotnet-pom
+  - dotnet-paas
+
+archetypes:
+  dotnet-pom:
+    label: Arquetipo .NET sobre el paquete base estilo "parent POM"
+    detect:
+      # Señal fuerte: sola alcanza para resolver el archetype (confirmado en sooft-discovery.md §1.a).
+      nuget_packages:
+        - <paquete-base-pom>
+      # Señal de apoyo: solo refuerza, no decide por sí sola.
+      target_framework: net8.0
+    load:
+      - backend-service/dotnet/README.md
+      - backend-service/dotnet/tech-stack.md
+      - backend-service/golden-rules.md
+    on_demand:
+      http_client:
+        - backend-service/dotnet/README.md
+      new_project:
+        - backend-service/dotnet/README.md
+      migration:
+        - ../../../sooft-migrations/agents/dotnet-migration-agent.md
+      tests:
+        - ../drivers/dotnet-create-tests.md
+      swagger:
+        - ../drivers/dotnet-create-yaml.md
+    # provides/requires/absent: sin precedente literal en el repo — valores plausibles a ajustar
+    # con el detalle real del paquete base cuando esté disponible.
+    provides:
+      - envelope-response # meta/data/errors — ver drivers/dotnet-create-yaml.md
+      - health-checks
+      - http-client-resilience
+      - otel-tracing
+    requires:
+      - dotnet-8-sdk
+    absent:
+      - swashbuckle-aspnetcore
+      - newtonsoft-json
+
+  dotnet-paas:
+    label: Arquetipo .NET sobre el paquete base estilo PaaS
+    detect:
+      nuget_packages:
+        - <paquete-base-paas>
+      target_framework: net8.0
+    load:
+      - backend-service/dotnet/README.md
+      - backend-service/dotnet/tech-stack.md
+      - backend-service/golden-rules.md
+    on_demand:
+      http_client:
+        - backend-service/dotnet/README.md
+      new_project:
+        - backend-service/dotnet/README.md
+      migration:
+        - ../../../sooft-migrations/agents/dotnet-migration-agent.md
+      tests:
+        - ../drivers/dotnet-create-tests.md
+      swagger:
+        - ../drivers/dotnet-create-yaml.md
+    provides:
+      - envelope-response
+      - health-checks
+      - http-client-resilience
+      - otel-tracing
+    requires:
+      - dotnet-8-sdk
+    absent:
+      - swashbuckle-aspnetcore
+      - newtonsoft-json
