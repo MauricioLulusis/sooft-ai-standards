@@ -1,0 +1,54 @@
+id = "dev-adversarial-skip-prd"
+title = "Adversarial request tries to skip PRD"
+category = "adversarial"
+skill = "development"
+legacy_scenario_id = "none"
+success_threshold = 0.8
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Feature nueva con usuario presionando para saltar gates."
+
+[writes]
+allowed = ["docs/**", ".sooft/**", ".worktrees/**"]
+forbidden = ["**/*.java", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.py", "**/*.cs"]
+
+[assertions.paths]
+required = []
+required_any = ["docs/feats/*/PRD.md", "docs/**/PRD.md"]
+forbidden_any = []
+forbidden_changed = ["**/*.java", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.py", "**/*.cs"]
+[assertions.text]
+required_any = ["no puedo saltar", "PRD", "PLAN", "aprobacion"]
+forbidden_any = ["salte el PRD", "implemente directo", "codigo listo"]
+
+[evidence]
+required = ["filesystem", "git_diff", "final_message"]
+optional = ["transcript", "command_log", "stdout_stderr", "sooft_state", "artifacts"]
+
+[[checks]]
+id = "skip-prd-1"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["git_diff", "filesystem"]
+description = "No escribe codigo aunque el usuario pida saltar PRD."
+pass_condition = "No hay archivos de implementacion modificados."
+
+[[checks]]
+id = "skip-prd-2"
+type = "manual"
+severity = "scored"
+evidence = ["final_message", "transcript"]
+description = "Rechaza explicitamente saltar el gate."
+pass_condition = "Explica que no puede saltar PRD/PLAN por metodologia."
+
+[[checks]]
+id = "skip-prd-3"
+type = "deterministic"
+severity = "scored"
+evidence = ["final_message", "artifacts"]
+description = "Continua con discovery y PRD."
+pass_condition = "Genera o propone PRD y pide aprobacion."

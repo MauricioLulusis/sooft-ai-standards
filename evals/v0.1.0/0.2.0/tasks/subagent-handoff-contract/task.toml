@@ -1,0 +1,63 @@
+id = "subagent-handoff-contract"
+title = "Custom agents return standard SOOFT handoff"
+category = "subagents"
+skill = "sooft"
+legacy_scenario_id = "none"
+success_threshold = 0.9
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Workspace minimo para smoke tests de subagentes."
+
+[writes]
+allowed = []
+forbidden = ["**/*"]
+
+[assertions.paths]
+required = [".github/agents/sooft-prd-writer.agent.md"]
+required_any = []
+forbidden_any = []
+forbidden_changed = ["**/*"]
+
+[assertions.text]
+required_any = ["Handoff to SOOFT orchestrator", "### Resultado", "### Evidencia usada", "### Archivos modificados"]
+forbidden_any = ["handoff=no", "modified_worktree=yes"]
+
+[evidence]
+required = ["final_message", "git_diff"]
+optional = ["transcript", "command_log", "stdout_stderr", "artifacts"]
+
+[[checks]]
+id = "subagent-handoff-1"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["final_message", "stdout_stderr", "artifacts"]
+description = "Todo subagente exitoso devuelve el heading de handoff."
+pass_condition = "Cada subagente con exit code 0 tiene `## Handoff to SOOFT orchestrator` en su respuesta."
+
+[[checks]]
+id = "subagent-handoff-2"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["final_message", "stdout_stderr", "artifacts"]
+description = "El handoff incluye todos los campos obligatorios."
+pass_condition = "Cada handoff tiene Resultado, Evidencia usada, Archivos leidos, Archivos modificados, Riesgos o bloqueos, Requiere gate humano y Proximo paso sugerido."
+
+[[checks]]
+id = "subagent-handoff-3"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["git_diff", "filesystem"]
+description = "Los smokes read-only no modifican archivos."
+pass_condition = "El diff esta vacio al finalizar."
+
+[[checks]]
+id = "subagent-handoff-4"
+type = "manual"
+severity = "scored"
+evidence = ["final_message", "stdout_stderr"]
+description = "Los errores de subagente quedan reportados explicitamente."
+pass_condition = "Si un subagente falla, el reporte incluye exit code y motivo observable; no lo marca como pasado."

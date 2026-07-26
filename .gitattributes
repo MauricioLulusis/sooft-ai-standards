@@ -1,0 +1,5 @@
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# Markdown — LF only, no BOM
+*.md text eol=lf working-tree-encoding=UTF-8

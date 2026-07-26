@@ -1,0 +1,70 @@
+id = "init-no-long-questionnaire"
+title = "Init infers context and asks at most five questions"
+category = "init"
+skill = "init"
+legacy_scenario_id = "init-no-long-questionnaire"
+success_threshold = 0.8
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Proyecto no inicializado con el issue tracker disponible y Confluence ausente."
+
+[writes]
+allowed = [".sooft/**", "docs/**"]
+forbidden = ["**/*.java", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.py", "**/*.cs"]
+
+[assertions.paths]
+required = [".sooft/state.json", ".sooft/config.json"]
+required_any = []
+forbidden_any = []
+forbidden_changed = ["**/*.java", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.py", "**/*.cs"]
+[assertions.text]
+required_any = ["el issue tracker", "Confluence", "no configurado"]
+forbidden_any = ["bloqueado por Confluence", "necesito responder 6 preguntas"]
+
+[evidence]
+required = ["filesystem", "git_diff", "final_message"]
+optional = ["transcript", "command_log", "stdout_stderr", "sooft_state", "artifacts"]
+
+[[checks]]
+id = "init-1"
+type = "transcript"
+severity = "scored"
+evidence = ["transcript", "final_message"]
+description = "No hace mas de 5 preguntas."
+pass_condition = "El transcript/final_message contiene 5 preguntas o menos."
+
+[[checks]]
+id = "init-2"
+type = "manual"
+severity = "scored"
+evidence = ["command_log", "final_message", "artifacts"]
+description = "Infiere lenguaje y framework del codigo si es posible."
+pass_condition = "La respuesta indica stack detectado o explica que no pudo detectarlo."
+
+[[checks]]
+id = "init-3"
+type = "deterministic"
+severity = "scored"
+evidence = ["artifacts", "sooft_state", "git_diff"]
+description = "Registra el issue tracker como integracion disponible."
+pass_condition = "La configuracion/evidencia menciona el issue tracker disponible."
+
+[[checks]]
+id = "init-4"
+type = "deterministic"
+severity = "scored"
+evidence = ["artifacts", "final_message"]
+description = "Registra Confluence como no configurado sin bloquear."
+pass_condition = "Confluence figura ausente/no configurado y el flujo no queda bloqueado por eso."
+
+[[checks]]
+id = "init-5"
+type = "deterministic"
+severity = "scored"
+evidence = ["filesystem", "git_diff"]
+description = "Crea .sooft/state.json y .sooft/config.json."
+pass_condition = "Existen `.sooft/state.json` y `.sooft/config.json`."

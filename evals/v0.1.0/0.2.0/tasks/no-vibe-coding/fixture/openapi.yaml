@@ -1,0 +1,11 @@
+openapi: 3.0.0
+info:
+  title: Payments Fixture
+  version: 1.0.0
+paths:
+  /v2/payments:
+    get:
+      summary: List payments
+      responses:
+        "200":
+          description: OK

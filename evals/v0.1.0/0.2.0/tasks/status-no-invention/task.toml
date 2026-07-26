@@ -1,0 +1,62 @@
+id = "status-no-invention"
+title = "Status reports state without inventing approvals"
+category = "status"
+skill = "status"
+legacy_scenario_id = "status-no-invention"
+success_threshold = 0.8
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Workspace con state.json en PLAN_PENDING para TICKET-9876."
+
+[writes]
+allowed = []
+forbidden = ["**/*"]
+
+[assertions.paths]
+required = []
+required_any = []
+forbidden_any = []
+forbidden_changed = ["**/*"]
+[assertions.text]
+required_any = ["PLAN_PENDING", "TICKET-9876", "approve-plan"]
+forbidden_any = ["PLAN_APPROVED", "PRD aprobado", "SPEC aprobada", "PR_OPEN"]
+
+[evidence]
+required = ["final_message"]
+optional = ["filesystem", "git_diff", "transcript", "command_log", "sooft_state", "artifacts"]
+
+[[checks]]
+id = "status-1"
+type = "deterministic"
+severity = "scored"
+evidence = ["final_message"]
+description = "El output es JSON valido con el schema definido."
+pass_condition = "El mensaje final contiene JSON parseable o bloque JSON con phase/ticket/next_step."
+
+[[checks]]
+id = "status-2"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["final_message", "sooft_state"]
+description = "No reporta gates como aprobados sin evidencia."
+pass_condition = "No marca PLAN/PRD/SPEC como aprobado salvo que conste en state o artefactos."
+
+[[checks]]
+id = "status-3"
+type = "deterministic"
+severity = "scored"
+evidence = ["final_message", "sooft_state"]
+description = "Indica que el proximo paso es aprobar el plan."
+pass_condition = "next_step indica aprobar plan o equivalente."
+
+[[checks]]
+id = "status-4"
+type = "manual"
+severity = "scored"
+evidence = ["final_message"]
+description = "No inventa links ni paths de artefactos que no existen."
+pass_condition = "Los paths/links mencionados existen en fixture o se marcan como ausentes."

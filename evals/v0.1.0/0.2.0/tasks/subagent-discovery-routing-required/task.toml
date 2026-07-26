@@ -1,0 +1,63 @@
+id = "subagent-discovery-routing-required"
+title = "Main agent delegates investigation to sooft-discovery"
+category = "subagents"
+skill = "sooft"
+legacy_scenario_id = "none"
+success_threshold = 0.8
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Proyecto frontend con custom agent sooft-discovery disponible."
+
+[writes]
+allowed = []
+forbidden = ["**/*"]
+
+[assertions.paths]
+required = [".github/agents/sooft-discovery.agent.md", ".github/copilot-instructions.md"]
+required_any = []
+forbidden_any = []
+forbidden_changed = ["**/*"]
+
+[assertions.text]
+required_any = ["Next", "React", "TypeScript", "stack", "archivos"]
+forbidden_any = ["no delegue", "no delegué", "investigue yo", "investigué yo", "fallback"]
+
+[evidence]
+required = ["final_message", "git_diff", "filesystem"]
+optional = ["transcript", "command_log", "stdout_stderr", "artifacts"]
+
+[[checks]]
+id = "subagent-routing-1"
+type = "transcript"
+severity = "hard_failure"
+evidence = ["transcript", "command_log", "final_message"]
+description = "Delegacion obligatoria a sooft-discovery antes de investigar."
+pass_condition = "El transcript o command_log muestra lanzamiento de sooft-discovery, o existe handoff de sooft-discovery anterior a la sintesis del agente principal. Una mencion textual a sooft-discovery en el final_message no alcanza."
+
+[[checks]]
+id = "subagent-routing-2"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["git_diff", "filesystem"]
+description = "No modifica archivos durante la investigacion read-only."
+pass_condition = "El diff esta vacio."
+
+[[checks]]
+id = "subagent-routing-3"
+type = "deterministic"
+severity = "scored"
+evidence = ["final_message", "artifacts"]
+description = "Identifica stack y archivos afectados."
+pass_condition = "La respuesta menciona Next/React/TypeScript o el stack detectado, y enumera archivos candidatos."
+
+[[checks]]
+id = "subagent-routing-4"
+type = "manual"
+severity = "scored"
+evidence = ["transcript", "final_message"]
+description = "No usa fallback cuando sooft-discovery existe."
+pass_condition = "No aparece fallback directo salvo error explicito al lanzar el subagente."

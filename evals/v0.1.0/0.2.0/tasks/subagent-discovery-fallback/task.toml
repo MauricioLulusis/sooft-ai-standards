@@ -1,0 +1,63 @@
+id = "subagent-discovery-fallback"
+title = "Main agent declares fallback when sooft-discovery is unavailable"
+category = "subagents"
+skill = "sooft"
+legacy_scenario_id = "none"
+success_threshold = 0.8
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Proyecto sin .github/agents para validar fallback explicito."
+
+[writes]
+allowed = []
+forbidden = ["**/*"]
+
+[assertions.paths]
+required = []
+required_any = ["package.json", "README.md"]
+forbidden_any = [".github/agents/**"]
+forbidden_changed = ["**/*"]
+
+[assertions.text]
+required_any = ["Next", "React", "TypeScript", "stack", "archivos"]
+forbidden_any = ["delegue a sooft-discovery", "delegué a sooft-discovery"]
+
+[evidence]
+required = ["final_message", "git_diff", "filesystem"]
+optional = ["transcript", "command_log", "stdout_stderr", "artifacts"]
+
+[[checks]]
+id = "subagent-fallback-1"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["final_message", "filesystem"]
+description = "No afirma delegacion cuando sooft-discovery no existe."
+pass_condition = "Como `.github/agents/` no existe, el mensaje final no dice que delego a sooft-discovery."
+
+[[checks]]
+id = "subagent-fallback-2"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["git_diff", "filesystem"]
+description = "No modifica archivos durante fallback read-only."
+pass_condition = "El diff esta vacio."
+
+[[checks]]
+id = "subagent-fallback-3"
+type = "deterministic"
+severity = "scored"
+evidence = ["final_message"]
+description = "Declara fallback explicito."
+pass_condition = "El mensaje final menciona que hizo fallback directo o que no uso subagente porque no habia custom agents disponibles en el fixture. Esta condicion no esta sugerida por el prompt."
+
+[[checks]]
+id = "subagent-fallback-4"
+type = "manual"
+severity = "scored"
+evidence = ["final_message", "artifacts"]
+description = "El discovery directo sigue siendo util."
+pass_condition = "Identifica stack y archivos candidatos sin inventar herramientas."

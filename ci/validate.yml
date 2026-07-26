@@ -1,0 +1,194 @@
+# CI de validación para sooft-ai-standards
+#
+# ⚠️ Para ACTIVARLO: copiar este archivo a .github/workflows/validate.yml
+#    (requiere un token con scope `workflow`, o subirlo desde la UI de GitHub).
+#    Se dejó acá en ci/ para poder versionarlo sin ese scope.
+#
+# Valida la integridad del repo en cada cambio:
+# - sintaxis de los hooks .sh
+# - estructura de los manifiestos de plugin
+# - JSON bien formado (manifiestos legacy)
+# - estructura estatica de evals v0.2.0 (sin runner)
+# - ausencia de referencias a la metodología vieja
+# - ausencia de secretos hardcodeados
+
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  shellcheck:
+    name: Hooks (.sh) — sintaxis y shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar sintaxis bash
+        run: |
+          for f in plugins/sooft/hooks/*.sh; do
+            echo "Verificando $f"
+            bash -n "$f"
+          done
+      - name: Shellcheck
+        run: |
+          sudo apt-get update && sudo apt-get install -y shellcheck
+          shellcheck -S warning plugins/sooft/hooks/*.sh || true
+
+  evals:
+    name: Manifiestos y evals — estructura válida
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar JSON
+        run: |
+          for f in .claude-plugin/marketplace.json plugins/sooft/.claude-plugin/plugin.json evals/v0.1.0/evals.json; do
+            echo "Validando $f"
+            python3 -c "import json,sys; json.load(open('$f'))"
+          done
+      - name: Validar estructura evals v0.2.0
+        run: |
+          python3 - <<'PY'
+          import pathlib
+          import sys
+          import tomllib
+          import json
+
+          root = pathlib.Path("evals/v0.2.0")
+          required_root = ["README.md", "schema.md", "rubric.md", "migration.md"]
+          missing = [str(root / f) for f in required_root if not (root / f).is_file()]
+          allowed_categories = {"process-safety", "adversarial", "bug", "security", "init", "status", "state"}
+          allowed_skills = {"development", "bugs", "security-remediation", "init", "status", "review", "next"}
+          allowed_check_types = {"deterministic", "transcript", "manual"}
+          allowed_severities = {"hard_failure", "scored"}
+          allowed_evidence = {"filesystem", "git_diff", "artifacts", "final_message", "transcript", "command_log", "stdout_stderr", "sooft_state"}
+
+          tasks = sorted((root / "tasks").iterdir()) if (root / "tasks").is_dir() else []
+          if len([p for p in tasks if p.is_dir()]) != 10:
+              missing.append("evals/v0.2.0/tasks must contain exactly 10 task directories")
+
+          required_task = ["task.toml", "instruction.md", "fixture/README.md", "verification.md", "expected/README.md"]
+          all_checks = {}
+          for task in tasks:
+              if not task.is_dir():
+                  continue
+              for rel in required_task:
+                  if not (task / rel).is_file():
+                      missing.append(str(task / rel))
+              fixture_files = [p for p in (task / "fixture").rglob("*") if p.is_file()]
+              if len(fixture_files) < 2:
+                  missing.append(f"{task / 'fixture'} must contain materialized files beyond README.md")
+              with open(task / "task.toml", "rb") as fh:
+                  data = tomllib.load(fh)
+              for key in ["id", "title", "category", "skill", "legacy_scenario_id", "success_threshold"]:
+                  if key not in data:
+                      missing.append(f"{task / 'task.toml'} missing {key}")
+              if data.get("id") != task.name:
+                  missing.append(f"{task / 'task.toml'} id must match directory name")
+              if data.get("category") not in allowed_categories:
+                  missing.append(f"{task / 'task.toml'} invalid category")
+              if data.get("skill") not in allowed_skills:
+                  missing.append(f"{task / 'task.toml'} invalid skill")
+              for section in ["prompt", "fixture", "writes", "evidence", "assertions"]:
+                  if section not in data:
+                      missing.append(f"{task / 'task.toml'} missing [{section}]")
+              if data.get("prompt", {}).get("file") != "instruction.md":
+                  missing.append(f"{task / 'task.toml'} prompt.file must be instruction.md")
+              if data.get("fixture", {}).get("path") != "fixture":
+                  missing.append(f"{task / 'task.toml'} fixture.path must be fixture")
+              writes = data.get("writes", {})
+              if not isinstance(writes.get("allowed"), list) or not isinstance(writes.get("forbidden"), list):
+                  missing.append(f"{task / 'task.toml'} writes.allowed/forbidden must be lists")
+              evidence = data.get("evidence", {})
+              for key in ["required", "optional"]:
+                  values = evidence.get(key)
+                  if not isinstance(values, list):
+                      missing.append(f"{task / 'task.toml'} evidence.{key} must be a list")
+                      continue
+                  unknown = set(values) - allowed_evidence
+                  if unknown:
+                      missing.append(f"{task / 'task.toml'} unknown evidence values: {sorted(unknown)}")
+              assertions = data.get("assertions", {})
+              if "paths" not in assertions or "text" not in assertions:
+                  missing.append(f"{task / 'task.toml'} assertions.paths/text required")
+              for section_name, keys in {"paths": ["required", "required_any", "forbidden_any", "forbidden_changed"], "text": ["required_any", "forbidden_any"]}.items():
+                  section = assertions.get(section_name, {})
+                  for key in keys:
+                      if key not in section:
+                          missing.append(f"{task / 'task.toml'} assertions.{section_name}.{key} required")
+                      elif not isinstance(section[key], list):
+                          missing.append(f"{task / 'task.toml'} assertions.{section_name}.{key} must be a list")
+              checks = data.get("checks")
+              if not checks:
+                  missing.append(f"{task / 'task.toml'} must define checks")
+              for check in checks or []:
+                  for key in ["id", "type", "severity", "evidence", "description", "pass_condition"]:
+                      if key not in check:
+                          missing.append(f"{task / 'task.toml'} check missing {key}")
+                  if check.get("type") not in allowed_check_types:
+                      missing.append(f"{task / 'task.toml'} check {check.get('id')} invalid type")
+                  if check.get("severity") not in allowed_severities:
+                      missing.append(f"{task / 'task.toml'} check {check.get('id')} invalid severity")
+                  if not isinstance(check.get("evidence"), list):
+                      missing.append(f"{task / 'task.toml'} check {check.get('id')} evidence must be list")
+                  else:
+                      unknown = set(check.get("evidence", [])) - allowed_evidence
+                      if unknown:
+                          missing.append(f"{task / 'task.toml'} check {check.get('id')} unknown evidence: {sorted(unknown)}")
+                  check_id = check.get("id")
+                  if check_id in all_checks:
+                      missing.append(f"duplicate check id {check_id}")
+                  all_checks[check_id] = check
+
+          legacy = json.load(open("evals/v0.1.0/evals.json"))
+          migration = (root / "migration.md").read_text()
+          for scenario in legacy["scenarios"]:
+              if scenario["id"] not in migration:
+                  missing.append(f"migration.md missing scenario {scenario['id']}")
+              for expectation in scenario["expectations"]:
+                  check = all_checks.get(expectation["id"])
+                  if expectation["id"] not in migration:
+                      missing.append(f"migration.md missing expectation {expectation['id']}")
+                  if check is None:
+                      missing.append(f"v0.2.0 missing legacy check {expectation['id']}")
+                  elif expectation.get("hard_failure") and check.get("severity") != "hard_failure":
+                      missing.append(f"legacy hard failure {expectation['id']} is not hard_failure in v0.2.0")
+
+          if missing:
+              print("ERROR: estructura de evals invalida:")
+              for item in missing:
+                  print(f"- {item}")
+              sys.exit(1)
+          print("OK — evals v0.2.0 estructura valida.")
+          PY
+
+  coherence:
+    name: Coherencia — sin metodología vieja
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sin referencias a 'gdd' ni comandos viejos
+        run: |
+          if grep -rniE "\bgdd\b|/gdd:|gdd-enforce" --include="*.md" --include="*.sh" . | grep -v CHANGELOG.md; then
+            echo "ERROR: se encontraron referencias a la metodología vieja (gdd)."
+            exit 1
+          fi
+          echo "OK — sin referencias viejas."
+
+  secrets:
+    name: Sin secretos hardcodeados
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Escaneo básico de secretos
+        run: |
+          # Excluye los hooks (contienen patrones de detección, no secretos reales)
+          if grep -rniE "(AKIA[0-9A-Z]{16}|ghp_[a-zA-Z0-9]{36}|glpat-[a-zA-Z0-9]{20}|-----BEGIN [A-Z]+ PRIVATE KEY)" \
+               --include="*.md" --include="*.sh" --include="*.json" . \
+               | grep -v "plugins/sooft/hooks/" | grep -vE "x{10,}"; then
+            echo "ERROR: posible secreto hardcodeado."
+            exit 1
+          fi
+          echo "OK — sin secretos detectados."

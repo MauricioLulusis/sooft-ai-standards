@@ -1,0 +1,9 @@
+{
+  "discovery_completed": false,
+  "ticket": "TICKET-XXXXX",
+  "owner": "developer.usuario",
+  "asked_at": "2026-06-02",
+  "questions": [],
+  "answers": [],
+  "notes": "El agente decide las preguntas segun el contexto del requerimiento (hasta 5, una ronda, con opciones para elegir). Aca se registran las que efectivamente se hicieron y sus respuestas."
+}

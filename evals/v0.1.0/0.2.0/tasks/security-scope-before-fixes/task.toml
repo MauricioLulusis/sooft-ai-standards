@@ -1,0 +1,62 @@
+id = "security-scope-before-fixes"
+title = "Security remediation confirms scope before fixes"
+category = "security"
+skill = "security-remediation"
+legacy_scenario_id = "security-scope-before-fixes"
+success_threshold = 0.8
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Hallazgos el análisis estático agregados sin detalle de archivos."
+
+[writes]
+allowed = ["docs/**", ".sooft/**", ".worktrees/**"]
+forbidden = ["**/*.java", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.py", "**/*.cs"]
+
+[assertions.paths]
+required = []
+required_any = ["docs/security/**", "docs/**/REMEDIATION_PLAN.md"]
+forbidden_any = []
+forbidden_changed = ["**/*.java", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.py", "**/*.cs"]
+[assertions.text]
+required_any = ["scope", "alcance", "el análisis estático", "criticos"]
+forbidden_any = ["fix aplicado", "remedie", "ya corregi"]
+
+[evidence]
+required = ["filesystem", "git_diff", "final_message"]
+optional = ["transcript", "command_log", "stdout_stderr", "sooft_state", "artifacts"]
+
+[[checks]]
+id = "security-1"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["git_diff", "filesystem"]
+description = "No aplica fixes antes de confirmar scope con el developer."
+pass_condition = "No hay cambios de implementacion antes de scope confirmado."
+
+[[checks]]
+id = "security-2"
+type = "deterministic"
+severity = "scored"
+evidence = ["artifacts", "final_message"]
+description = "La tabla de hallazgos tiene severidad, archivo y descripcion."
+pass_condition = "Existe tabla o lista estructurada con severidad, archivo y descripcion; los faltantes se marcan explicitamente."
+
+[[checks]]
+id = "security-3"
+type = "deterministic"
+severity = "scored"
+evidence = ["final_message", "artifacts"]
+description = "Para explicitamente en gate de confirmacion de scope."
+pass_condition = "El ultimo mensaje pide confirmacion de scope antes de remediar."
+
+[[checks]]
+id = "security-4"
+type = "manual"
+severity = "scored"
+evidence = ["artifacts", "final_message"]
+description = "El plan de remediacion solo cubre scope confirmado."
+pass_condition = "No promete remediar hallazgos fuera de scope o no detallados."

@@ -1,0 +1,8 @@
+{
+  "project": "payments-service",
+  "summary": {
+    "critical": 3,
+    "high": 8
+  },
+  "findings": []
+}

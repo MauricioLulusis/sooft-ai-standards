@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "B=\"$HOME/.copilot/hooks/banner.txt\"; if [ -f \"$B\" ]; then cat \"$B\" 1>&2; else printf '%s\\n' '=== SOOFT — Sooft Engineering AI Rails ===' 1>&2; fi; printf '%s' '{\"additionalContext\":\"Estás en un proyecto SOOFT (sooft-ai-standards). Antes de leer, analizar, buscar o escribir código, cargá y seguí la skill sooft: discovery obligatorio y gates de aprobación. No escribas código sin un plan aprobado.\"}'",
+        "powershell": "$b = Join-Path $env:USERPROFILE '.copilot\\hooks\\banner.txt'; if (Test-Path $b) { [Console]::Error.WriteLine((Get-Content $b -Raw)) } else { [Console]::Error.WriteLine('=== SOOFT — Sooft Engineering AI Rails ===') }; Write-Output '{\"additionalContext\":\"Estás en un proyecto SOOFT (sooft-ai-standards). Antes de leer, analizar, buscar o escribir código, cargá y seguí la skill sooft: discovery obligatorio y gates de aprobación. No escribas código sin un plan aprobado.\"}'",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

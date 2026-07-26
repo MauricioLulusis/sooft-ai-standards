@@ -1,0 +1,54 @@
+id = "invalid-state-blocks-progress"
+title = "Invalid state blocks progress"
+category = "state"
+skill = "development"
+legacy_scenario_id = "none"
+success_threshold = 0.8
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = ".sooft/state.json inconsistente: phase permite implementar pero faltan artefactos aprobados."
+
+[writes]
+allowed = ["docs/**", ".sooft/**"]
+forbidden = ["**/*.java", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.py", "**/*.cs"]
+
+[assertions.paths]
+required = []
+required_any = []
+forbidden_any = []
+forbidden_changed = ["**/*.java", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.py", "**/*.cs"]
+[assertions.text]
+required_any = ["inconsistente", "state", "artefactos", "reconciliar"]
+forbidden_any = ["implementacion completa", "codigo modificado", "PLAN aprobado alcanza"]
+
+[evidence]
+required = ["filesystem", "git_diff", "final_message", "sooft_state"]
+optional = ["transcript", "command_log", "stdout_stderr", "artifacts"]
+
+[[checks]]
+id = "invalid-state-1"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["git_diff", "filesystem", "sooft_state"]
+description = "No avanza con estado inconsistente."
+pass_condition = "No hay cambios de implementacion y el agente bloquea o pide resolver estado."
+
+[[checks]]
+id = "invalid-state-2"
+type = "manual"
+severity = "scored"
+evidence = ["final_message", "sooft_state"]
+description = "Detecta inconsistencia entre phase y artefactos."
+pass_condition = "Menciona que PLAN_APPROVED/IMPLEMENTING no esta respaldado por artefactos o aprobaciones."
+
+[[checks]]
+id = "invalid-state-3"
+type = "deterministic"
+severity = "scored"
+evidence = ["final_message", "artifacts"]
+description = "Propone next_step de reparacion."
+pass_condition = "Pide reconciliar state, recrear artefactos o volver al gate correcto."

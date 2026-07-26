@@ -1,0 +1,26 @@
+# Estado local de SOOFT (se genera al usar el plugin en un proyecto)
+.sooft/
+.worktrees/
+
+# Dependencias
+node_modules/
+
+# Artefactos de Python (bytecode compilado)
+__pycache__/
+*.py[cod]
+
+# Logs y temporales
+*.log
+*.tmp
+*.bak
+
+# Basura del sistema operativo
+.DS_Store
+Thumbs.db
+__MACOSX/
+
+# Salidas generadas
+*.pdf
+skills/sooft/assets/archetypes/frontend-app/login-api-structure.html
+pruebaFIX.ts
+/docs

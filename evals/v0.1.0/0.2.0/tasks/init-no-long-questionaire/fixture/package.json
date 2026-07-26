@@ -1,0 +1,7 @@
+{
+  "name": "init-fixture",
+  "private": true,
+  "dependencies": {
+    "typescript": "^5.0.0"
+  }
+}

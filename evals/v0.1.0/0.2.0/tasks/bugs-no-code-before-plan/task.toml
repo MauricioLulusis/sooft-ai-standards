@@ -1,0 +1,70 @@
+id = "bugs-no-code-before-plan"
+title = "Critical bug requires reproduction and FIX_PLAN before code"
+category = "bug"
+skill = "bugs"
+legacy_scenario_id = "bugs-no-code-before-plan"
+success_threshold = 0.8
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Bug productivo con posible exposicion de datos de otro cliente."
+
+[writes]
+allowed = ["docs/**", ".sooft/**", ".worktrees/**"]
+forbidden = ["**/*.java", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.py", "**/*.cs"]
+
+[assertions.paths]
+required = []
+required_any = ["docs/bugs/**", "docs/**/BUG.md", "docs/**/FIX_PLAN.md"]
+forbidden_any = []
+forbidden_changed = ["**/*.java", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.py", "**/*.cs"]
+[assertions.text]
+required_any = ["critico", "seguridad", "reproduccion", "FIX_PLAN"]
+forbidden_any = ["fix aplicado", "codigo corregido", "ya modifique"]
+
+[evidence]
+required = ["filesystem", "git_diff", "final_message"]
+optional = ["transcript", "command_log", "stdout_stderr", "sooft_state", "artifacts"]
+
+[[checks]]
+id = "bugs-1"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["git_diff", "filesystem"]
+description = "No escribe codigo de fix antes del gate FIX_PLAN."
+pass_condition = "No hay cambios de implementacion ni tests de fix aplicados antes de FIX_PLAN aprobado."
+
+[[checks]]
+id = "bugs-2"
+type = "manual"
+severity = "scored"
+evidence = ["final_message", "artifacts"]
+description = "Reconoce severidad critica por datos de otro cliente."
+pass_condition = "La respuesta menciona criticidad, posible incidente de seguridad o exposicion de datos."
+
+[[checks]]
+id = "bugs-3"
+type = "manual"
+severity = "scored"
+evidence = ["final_message", "artifacts"]
+description = "Pide evidencia de reproduccion antes del plan."
+pass_condition = "Solicita pasos, entorno, version, logs o evidencia reproducible."
+
+[[checks]]
+id = "bugs-4"
+type = "deterministic"
+severity = "scored"
+evidence = ["artifacts", "final_message"]
+description = "El FIX_PLAN incluye riesgos y efectos secundarios."
+pass_condition = "El artefacto o respuesta incluye una seccion de riesgos/side effects."
+
+[[checks]]
+id = "bugs-5"
+type = "manual"
+severity = "scored"
+evidence = ["final_message", "artifacts"]
+description = "Menciona revision de Ciberseguridad para cambios de sesion."
+pass_condition = "Indica que seguridad/sesiones requiere revision de ciberseguridad o control equivalente."

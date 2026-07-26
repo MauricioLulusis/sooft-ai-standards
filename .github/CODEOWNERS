@@ -1,0 +1,19 @@
+# CODEOWNERS — sooft-ai-standards
+#
+# Define quién debe aprobar cambios en cada parte del repo.
+# Reemplazar los placeholders @equipo-* por los handles reales de GitHub/GitLab.
+
+# Por defecto, todo cambio lo revisa AI Platform
+*                               @equipo-ai-platform
+
+# El comportamiento del agente y la gobernanza requieren revisión de AI Platform
+/AGENTS.md                      @equipo-ai-platform
+/GOVERNANCE.md                  @equipo-ai-platform
+/skills/                        @equipo-ai-platform
+
+# Las reglas y controles de seguridad requieren revisión de Ciberseguridad
+/SECURITY.md                    @equipo-ai-platform @equipo-ciberseguridad
+/skills/sooft/SKILL.md           @equipo-ai-platform @equipo-ciberseguridad @equipo-arquitectura
+
+# La capa de compatibilidad con Copilot (instrucciones siempre-on + hooks)
+/.github/                       @equipo-ai-platform
