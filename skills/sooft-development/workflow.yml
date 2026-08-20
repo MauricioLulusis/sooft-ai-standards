@@ -1,6 +1,10 @@
 # skills/sooft-development/workflow.yml — rama FEATURE (type: feat).
 # Converge en skills/sooft/workflow.yml#IMPLEMENTING. Ver ese archivo para el tronco común
 # (VALIDATING → CODE_REVIEW_PENDING → REVIEW_DONE → PR_OPEN → DONE) y las reglas transversales.
+#
+# Única rama con un gate de RIGOR antes de planificar: no todo feature necesita PRD. El criterio
+# de clasificación (DIRECT/LEAN/FULL) vive en skills/sooft/SKILL.md §3.1 — este archivo solo
+# declara a qué estado salta cada nivel, no repite el criterio.
 
 skill: sooft-development
 kind: router
@@ -13,6 +17,22 @@ entry:
 
 states:
   ANALYZED: {}
+
+  RIGOR_PENDING:
+    gate:
+      approver: developer
+      phrase: "Clasifiqué este pedido como [DIRECT|LEAN|FULL] porque [motivo]. ¿Confirmás este nivel antes de que siga?"
+      note: "Criterio completo en skills/sooft/SKILL.md §3.1. CRITICAL de §5.2 fuerza FULL, sin excepción."
+
+  RIGOR_REJECTED:
+    returns_to: RIGOR_PENDING
+
+  RIGOR_CONFIRMED:
+    description: Guarda el nivel confirmado en state.json.rigor (direct|lean|full) y determina la rama siguiente.
+    routes:
+      full: PRD_PENDING
+      lean: PLAN_PENDING
+      direct: IMPLEMENTING   # única rama de SOOFT que llega a IMPLEMENTING sin *_PLAN_APPROVED
 
   PRD_PENDING:
     gate:
@@ -50,7 +70,13 @@ states:
   PLAN_APPROVED: {}
 
 transitions:
-  - {from: ANALYZED, to: PRD_PENDING, on: prd_drafted}
+  - {from: ANALYZED, to: RIGOR_PENDING, on: classified}
+  - {from: RIGOR_PENDING, to: RIGOR_REJECTED, on: developer_rejects}
+  - {from: RIGOR_REJECTED, to: RIGOR_PENDING, on: reclassified}
+  - {from: RIGOR_PENDING, to: RIGOR_CONFIRMED, on: developer_confirms}
+  - {from: RIGOR_CONFIRMED, to: PRD_PENDING, on: "rigor == full"}
+  - {from: RIGOR_CONFIRMED, to: PLAN_PENDING, on: "rigor == lean"}
+  - {from: RIGOR_CONFIRMED, to: IMPLEMENTING, on: "rigor == direct"}
   - {from: PRD_PENDING, to: PRD_REJECTED, on: developer_rejects}
   - {from: PRD_REJECTED, to: PRD_PENDING, on: prd_redrafted}
   - {from: PRD_PENDING, to: PRD_APPROVED, on: developer_approves}
@@ -64,7 +90,13 @@ transitions:
   - {from: PLAN_REJECTED, to: PLAN_PENDING, on: plan_redrafted}
   - {from: PLAN_PENDING, to: PLAN_APPROVED, on: developer_approves}
 
+rules:
+  rigor_gate_mandatory: "RIGOR_CONFIRMED no se infiere de un pedido de saltar ceremonia — requiere OK explícito, igual que los demás gates."
+  direct_denied_for: [auth_session_tokens, ambiguous_request, data_or_payment_impact, migration]
+  critical_forces_full: "Si SKILL.md §5.2 clasificó CRITICAL, el rigor no puede ser DIRECT ni LEAN."
+  direct_still_gated_at_review: "DIRECT salta PRD/SPEC/PLAN, pero NUNCA el gate 4 (código IA-generated) ni el tronco común."
+
 converges_to: "skills/sooft/workflow.yml#IMPLEMENTING"
-converge_event: plan_approved
+converge_event: "plan_approved (full|lean) o rigor_confirmed (direct)"
 
 artifacts_root: docs/feats/{slug}/

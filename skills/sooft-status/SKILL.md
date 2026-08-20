@@ -120,7 +120,10 @@ tienen su propia secuencia de alcance/plan hasta que convergen en `IMPLEMENTING`
 
 | Fase | next_step |
 |------|-----------|
-| ANALYZED | Generar el PRD |
+| ANALYZED | Clasificar rigor (DIRECT/LEAN/FULL) |
+| RIGOR_PENDING | Confirmar o rechazar el nivel de rigor propuesto |
+| RIGOR_REJECTED | El agente reclasifica y vuelve a presentar el gate de rigor |
+| RIGOR_CONFIRMED | Continuar con PRD (full), PLAN directo (lean) o implementar (direct) |
 | PRD_PENDING | Aprobar o rechazar el PRD |
 | PRD_REJECTED | El agente corrige el PRD y vuelve a presentarlo |
 | PRD_APPROVED | Continuar con SPEC (si aplica) o PLAN |

@@ -144,6 +144,8 @@ Si el MCP del issue tracker está disponible en la sesión (las tools `get-story
 
 **El agente NO crea NINGÚN archivo del trabajo —ni carpeta, ni HTML, ni código, ni config, ni `index.html`, ni `tsconfig.json`, nada— hasta que el PLAN esté APROBADO explícitamente por el developer.** No tocás el filesystem del entregable antes de ese OK. El único archivo que escribís antes de la aprobación es el propio `docs/feats/{slug}/PLAN.md` (y los artefactos previos: discovery, PRD, SPEC).
 
+> **Única excepción: rigor DIRECT.** En `sooft-development`, antes del PRD hay un gate de clasificación de rigor (DIRECT/LEAN/FULL — skill `sooft` §3.1). Si el developer confirmó explícitamente DIRECT (cambio trivial, reversible, sin lógica — nunca auth, ambigüedad, datos o pagos), el agente puede implementar directo desde `RIGOR_CONFIRMED`, sin PRD ni PLAN. Sigue pasando por el gate 4 (código IA-generated) igual que cualquier otro camino. Esta excepción NO aplica si no pasaste primero por el gate de rigor.
+
 > **PROHIBIDO el patrón "plan informal + empezar a crear".** Está terminantemente prohibido armar un plan mental o informal del tipo *"Let me plan…"* / *"bueno, el plan es…"* y arrancar directo a crear archivos (*"Now I'll start creating the files"*). Eso es saltarse el gate. El plan se presenta **formalmente** en `docs/feats/{slug}/PLAN.md`, hacés **Stop**, **esperás el OK del developer**, y RECIÉN AHÍ implementás. Empezar a crear sin esa aprobación explícita es una violación del flujo, igual de grave que zambullirse en el código sin discovery.
 
 **Cómo presentás el PLAN (gate formal):**

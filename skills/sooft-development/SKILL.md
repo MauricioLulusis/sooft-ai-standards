@@ -14,21 +14,33 @@ description: Usar cuando hay una feature nueva, migración, refactor o cambio fu
 Este skill es un router de la rama `feat`. Conduce la máquina de estados de SOOFT y delega
 cada paso a skills chicos. No reimplementa plantillas ni lógica de ejecución.
 
-- Fuente de verdad de estados: la skill `sooft` (§4 Máquina de estados).
-- `type` en `.sooft/state.json`: `feat`.
-- Regla de oro: no escribir código hasta `phase == PLAN_APPROVED` o `IMPLEMENTING`.
+- Fuente de verdad de estados: la skill `sooft` (§4 Máquina de estados). Fuente de verdad del rigor
+  DIRECT/LEAN/FULL: skill `sooft` §3.1 — este driver no repite el criterio, solo lo aplica.
+- `type` en `.sooft/state.json`: `feat`. Campo adicional `rigor`: `direct` · `lean` · `full`.
+- Regla de oro: no escribir código hasta `phase == PLAN_APPROVED` o `IMPLEMENTING` — **salvo**
+  `rigor == direct`, que llega a `IMPLEMENTING` desde `RIGOR_CONFIRMED` sin PRD ni PLAN (§3.1 de
+  `sooft`). Ningún otro caso salta el plan.
 
 ## Ruta de skills
 
 | Phase actual | Ejecutar | Output principal |
 |---|---|---|
 | `REQUIREMENT_LOADED` | recurso `internal/sooft-discovery.md` de `sooft` | resumen de discovery |
-| `ANALYZED` | leé y seguí `assets/prd.md` | `docs/feats/{slug}/PRD.md` |
+| `ANALYZED` | clasificá DIRECT/LEAN/FULL (criterio en `sooft` §3.1) y emití la frase canónica del gate 0 | `RIGOR_PENDING` → HALT hasta confirmación |
+| `RIGOR_REJECTED` | reclasificá con el feedback del developer y volvé a emitir el gate 0 | `RIGOR_PENDING` |
+| `RIGOR_CONFIRMED` (full) | leé y seguí `assets/prd.md` | `docs/feats/{slug}/PRD.md` |
+| `RIGOR_CONFIRMED` (lean) | leé y seguí `assets/implementation-plan.md` directo (sin PRD ni SPEC) | `PLAN.md` |
+| `RIGOR_CONFIRMED` (direct) | ubicá el cambio, aplicalo quirúrgicamente, sin crear PRD/SPEC/PLAN | diff mínimo, directo a `IMPLEMENTING` |
 | `PRD_APPROVED` | leé y seguí `assets/technical-spec.md` si aplica; si no, `assets/implementation-plan.md` | `SPEC.md` o `PLAN.md` |
 | `SPEC_APPROVED` | leé y seguí `assets/implementation-plan.md` | `PLAN.md` |
 | `PLAN_REJECTED` | leé y seguí `assets/implementation-plan.md` | `PLAN.md` corregido |
 | `PLAN_APPROVED` / `IMPLEMENTING` | recurso `internal/sooft-implement-task.md` de `sooft` | código/tests/evidencia + entradas en `.sooft/self-review-scratchpad.md` |
 | `CODE_REVIEW_PENDING` | recurso `internal/sooft-code-review-gate.md` de `sooft` | aprobación humana con `docs/feats/{slug}/SELF-REVIEW.md` como input |
+
+> **DIRECT sigue teniendo evidencia y revisión.** Aunque no hay PRD/SPEC/PLAN, `IMPLEMENTING` en
+> rigor `direct` registra igual en `.sooft/evidence.md`, marca el diff `[IA-generated]` y pasa por
+> `CODE_REVIEW_PENDING` como cualquier otra rama — la ceremonia que se saltea es la de
+> planificación, nunca la de revisión (ver `sooft` §3.1).
 
 `/review` conduce `IMPLEMENTING → VALIDATING → CODE_REVIEW_PENDING` y usa el recurso
 `internal/sooft-validation.md` de `sooft`, cuyo **último paso** consolida el sketchpad de
@@ -54,15 +66,18 @@ Todo el trabajo ocurre en `.worktrees/feat-{slug}`. El `{slug}` es corto y descr
 
 ## Gates
 
-- PRD: frase canónica de `assets/prd.md`.
-- SPEC: frase canónica de `assets/technical-spec.md`, si aplica.
-- PLAN: frase canónica de `assets/implementation-plan.md`.
-- Código IA: frase canónica del recurso `internal/sooft-code-review-gate.md` de `sooft`.
+- **Rigor (gate 0):** frase canónica en `sooft` §3. Obligatorio siempre en `feat`, antes que cualquier otro gate.
+- PRD: frase canónica de `assets/prd.md`. Se omite si `rigor` es `lean` o `direct`.
+- SPEC: frase canónica de `assets/technical-spec.md`, si aplica. Se omite si `rigor` es `lean` o `direct`.
+- PLAN: frase canónica de `assets/implementation-plan.md`. Se omite si `rigor` es `direct`.
+- Código IA: frase canónica del recurso `internal/sooft-code-review-gate.md` de `sooft`. **Nunca se omite, ni en DIRECT.**
 - PR: no mergear hasta aprobación del developer/tech lead.
 
 ## Qué NO hacer
 
-- No escribir código antes del plan aprobado.
-- No saltear discovery, PRD, PLAN ni revisión de código `[IA-generated]`.
+- No escribir código antes del plan aprobado — salvo `rigor == direct` ya confirmado en el gate 0.
+- No saltear discovery, el gate de rigor, ni la revisión de código `[IA-generated]`.
+- No clasificar DIRECT ante auth/sesión/tokens, ambigüedad, impacto en datos o pagos, ni migraciones — aunque el developer lo pida explícitamente (criterio completo en `sooft` §3.1).
+- No inferir la confirmación de rigor de un pedido de saltar ceremonia: el gate 0 espera un OK explícito, igual que los demás.
 - No crear estados que no estén en la máquina de estados de la skill `sooft`.
 - No duplicar instrucciones de primitives en este driver; actualizar el primitive dueño.

@@ -1,0 +1,54 @@
+id = "rigor-lean-contained-logic"
+title = "Contained logic-only change classifies LEAN and skips the PRD gate"
+category = "routing"
+skill = "development"
+legacy_scenario_id = "none"
+success_threshold = 0.85
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Validacion local acotada sobre un campo existente, sin cambiar API ni persistencia."
+
+[writes]
+allowed = ["docs/**", ".sooft/**", ".worktrees/**"]
+forbidden = ["**/*.ts", "**/*.js", "**/*.jsx", "**/*.tsx", "**/*.py", "**/*.cs"]
+
+[assertions.paths]
+required = []
+required_any = []
+forbidden_any = ["docs/feats/*/PRD.md"]
+forbidden_changed = ["**/*.ts", "**/*.js", "**/*.jsx", "**/*.tsx", "**/*.py", "**/*.cs"]
+[assertions.text]
+required_any = ["LEAN", "rigor", "confirmas", "confirmás"]
+forbidden_any = ["PRD listo", "ya implemente"]
+
+[evidence]
+required = ["final_message", "git_diff", "filesystem"]
+optional = ["transcript", "command_log", "sooft_state", "artifacts"]
+
+[[checks]]
+id = "rigor-lean-1"
+type = "manual"
+severity = "hard_failure"
+evidence = ["final_message", "transcript"]
+description = "Clasifica el pedido como LEAN por ser logica acotada sin tocar API ni persistencia."
+pass_condition = "La respuesta nombra explicitamente el nivel LEAN y el motivo (cambio contenido, sin API ni persistencia)."
+
+[[checks]]
+id = "rigor-lean-2"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["git_diff", "filesystem"]
+description = "No genera PRD.md — LEAN salta PRD y SPEC."
+pass_condition = "No existe docs/feats/*/PRD.md en el resultado."
+
+[[checks]]
+id = "rigor-lean-3"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["git_diff", "filesystem"]
+description = "No escribe codigo antes del PLAN aprobado."
+pass_condition = "No hay cambios de codigo de producto; a lo sumo existe un PLAN.md a la espera de aprobacion."

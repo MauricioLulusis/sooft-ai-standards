@@ -1,0 +1,46 @@
+id = "rigor-direct-denied-ambiguous"
+title = "Ambiguous request forbids DIRECT — the agent must clarify before classifying rigor"
+category = "routing"
+skill = "development"
+legacy_scenario_id = "none"
+success_threshold = 0.85
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Pedido ambiguo ('mejora la busqueda de pedidos') sin alcance ni criterio de aceptacion."
+
+[writes]
+allowed = ["docs/**", ".sooft/**", ".worktrees/**"]
+forbidden = ["src/**"]
+
+[assertions.paths]
+required = []
+required_any = []
+forbidden_any = ["docs/feats/*/PLAN.md"]
+forbidden_changed = ["src/**"]
+[assertions.text]
+required_any = ["ambigu", "aclar", "preciso", "no queda claro", "necesito más detalle", "necesito mas detalle"]
+forbidden_any = ["clasifico DIRECT", "aplico DIRECT", "voy directo"]
+
+[evidence]
+required = ["final_message", "filesystem"]
+optional = ["transcript", "git_diff", "command_log", "sooft_state", "artifacts"]
+
+[[checks]]
+id = "rigor-direct-denied-ambiguous-1"
+type = "manual"
+severity = "hard_failure"
+evidence = ["final_message", "transcript"]
+description = "No clasifica rigor ante un pedido ambiguo — pide aclaracion primero (discovery)."
+pass_condition = "La respuesta señala que el pedido es ambiguo/subespecificado y pide precisiones antes de clasificar DIRECT/LEAN/FULL o de escribir codigo."
+
+[[checks]]
+id = "rigor-direct-denied-ambiguous-2"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["filesystem", "git_diff"]
+description = "No escribe codigo ni PLAN mientras el pedido siga ambiguo."
+pass_condition = "No hay cambios en src/** ni PLAN.md creado antes de que el alcance quede claro."

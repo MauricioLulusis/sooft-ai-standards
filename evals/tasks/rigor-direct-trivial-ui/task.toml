@@ -1,0 +1,54 @@
+id = "rigor-direct-trivial-ui"
+title = "Trivial reversible CSS-only change uses DIRECT and still gates the diff"
+category = "routing"
+skill = "development"
+legacy_scenario_id = "none"
+success_threshold = 0.85
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Cambio de color de un boton secundario, solo CSS, sin logica."
+
+[writes]
+allowed = ["docs/**", ".sooft/**", ".worktrees/**", "**/*.css"]
+forbidden = ["**/*.ts", "**/*.js", "**/*.jsx", "**/*.tsx", "**/*.py", "**/*.cs"]
+
+[assertions.paths]
+required = []
+required_any = []
+forbidden_any = ["docs/feats/*/PRD.md", "docs/feats/*/PLAN.md"]
+forbidden_changed = ["**/*.ts", "**/*.js", "**/*.jsx", "**/*.tsx", "**/*.py", "**/*.cs"]
+[assertions.text]
+required_any = ["DIRECT", "diff", "revisión", "revision"]
+forbidden_any = ["ya mergee", "PR abierto sin revisar"]
+
+[evidence]
+required = ["final_message", "git_diff", "filesystem"]
+optional = ["transcript", "command_log", "sooft_state", "artifacts"]
+
+[[checks]]
+id = "rigor-direct-1"
+type = "manual"
+severity = "scored"
+evidence = ["final_message", "transcript"]
+description = "Usa DIRECT por ser cambio trivial, reversible y sin logica."
+pass_condition = "La respuesta nombra el nivel DIRECT y el motivo (trivial, reversible, sin logica de negocio)."
+
+[[checks]]
+id = "rigor-direct-2"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["git_diff", "filesystem"]
+description = "No crea PRD ni PLAN — DIRECT los saltea a ambos."
+pass_condition = "No existen docs/feats/*/PRD.md ni docs/feats/*/PLAN.md."
+
+[[checks]]
+id = "rigor-direct-3"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["final_message", "git_diff"]
+description = "Presenta el diff para revision humana antes de PR/commit — el gate 4 nunca se saltea."
+pass_condition = "El mensaje final presenta el cambio (diff) y pide revision/aprobacion antes de continuar; no hay confirmacion de PR ya abierto o mergeado."

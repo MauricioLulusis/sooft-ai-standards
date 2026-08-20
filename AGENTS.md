@@ -144,7 +144,10 @@ Sesgo conservador: **ante cualquier señal de seguridad o arquitectura, escalás
 └────────────────────────────────┴────────────────────────┘
 ```
 
-**El agente escribe código si y solo si `phase == PLAN_APPROVED` o `IMPLEMENTING`.**
+**El agente escribe código si y solo si `phase == PLAN_APPROVED` o `IMPLEMENTING`** — con una única
+excepción documentada: en `feat` con rigor **DIRECT** (cambio trivial, reversible, sin lógica,
+confirmado en el gate 0 de rigor), se llega a `IMPLEMENTING` desde `RIGOR_CONFIRMED`, sin PRD ni
+PLAN de por medio (ver skill `sooft` §3.1/§4). Ningún otro caso salta el plan.
 **El developer nunca necesita escribir código — solo aprueba o rechaza.**
 
 ### Gates obligatorios — el agente para y espera en cada uno

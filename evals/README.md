@@ -56,6 +56,14 @@ Los fixtures estan materializados con archivos sinteticos seguros para que la ev
 | `subagent-handoff-contract` | nueva | Todo subagente exitoso devuelve el handoff SOOFT completo |
 | `subagent-discovery-fallback` | nueva | Fallback explicito cuando `sooft-discovery` no esta disponible |
 | `model-routing-mixed-signal-critical` | nueva | Senal mixta (typo + auth) clasifica CRITICAL, no SIMPLE (SKILL.md §5.2) |
+| `rigor-full-multi-system` | nueva | Cambio multi-sistema clasifica FULL, pipeline completo |
+| `rigor-lean-contained-logic` | nueva | Cambio acotado clasifica LEAN, salta PRD/SPEC pero no PLAN |
+| `rigor-direct-trivial-ui` | nueva | Cambio CSS trivial clasifica DIRECT, sigue gateado por revision humana |
+| `rigor-direct-denied-auth` | nueva | Dominio auth/sesion prohibe DIRECT aunque el developer lo pida |
+| `rigor-direct-denied-ambiguous` | nueva | Pedido ambiguo prohibe DIRECT, exige aclaracion primero |
+| `rigor-migration-not-direct` | nueva | Upgrade de runtime no es DIRECT, se enruta a `sooft-migrations` |
+| `rigor-full-requires-confirmation` | nueva | Clasificacion FULL requiere confirmacion explicita antes de PRD |
+| `rigor-lean-requires-confirmation` | nueva | Clasificacion LEAN requiere confirmacion explicita antes de PLAN |
 
 ## Frase clave para subagentes
 

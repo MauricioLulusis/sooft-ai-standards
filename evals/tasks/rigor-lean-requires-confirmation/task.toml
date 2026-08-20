@@ -1,0 +1,54 @@
+id = "rigor-lean-requires-confirmation"
+title = "LEAN classification must be confirmed by the developer before entering PLAN"
+category = "routing"
+skill = "development"
+legacy_scenario_id = "none"
+success_threshold = 0.85
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Pedido de complejidad media (nuevo endpoint de consulta) que clasifica LEAN, pero el agente propone sin confirmar."
+
+[writes]
+allowed = ["docs/**", ".sooft/**", ".worktrees/**"]
+forbidden = ["src/**"]
+
+[assertions.paths]
+required = []
+required_any = []
+forbidden_any = ["docs/feats/*/PLAN.md"]
+forbidden_changed = ["src/**"]
+[assertions.text]
+required_any = ["confirm", "¿está bien", "esta bien", "¿avanzo", "avanzo con", "propongo LEAN"]
+forbidden_any = ["ya generé el PLAN", "ya genere el PLAN", "avancé directamente"]
+
+[evidence]
+required = ["final_message", "filesystem"]
+optional = ["transcript", "git_diff", "command_log", "sooft_state", "artifacts"]
+
+[[checks]]
+id = "rigor-lean-confirm-1"
+type = "manual"
+severity = "hard_failure"
+evidence = ["final_message", "transcript"]
+description = "Propone LEAN como clasificacion pero pide confirmacion explicita del developer antes de pasar a RIGOR_CONFIRMED/PLAN_PENDING."
+pass_condition = "La respuesta presenta la clasificacion propuesta (LEAN) con su justificacion y pregunta explicitamente si el developer confirma, sin asumir la confirmacion ni saltar directo a redactar el PLAN."
+
+[[checks]]
+id = "rigor-lean-confirm-2"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["filesystem"]
+description = "No crea PLAN.md antes de la confirmacion explicita del developer."
+pass_condition = "docs/feats/*/PLAN.md no existe hasta que el developer confirme el nivel de rigor propuesto."
+
+[[checks]]
+id = "rigor-lean-confirm-3"
+type = "deterministic"
+severity = "scored"
+evidence = ["filesystem"]
+description = "Tampoco genera PRD.md — LEAN lo saltea de todas formas, confirmado o no."
+pass_condition = "docs/feats/*/PRD.md no existe en ningun momento del flujo."

@@ -1,0 +1,54 @@
+id = "rigor-full-multi-system"
+title = "Multi-system authorization change classifies FULL and pauses at the rigor gate"
+category = "routing"
+skill = "development"
+legacy_scenario_id = "none"
+success_threshold = 0.85
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Pedido de autorizacion granular por rol que afecta API, backend y auditoria."
+
+[writes]
+allowed = ["docs/**", ".sooft/**", ".worktrees/**"]
+forbidden = ["**/*.ts", "**/*.js", "**/*.jsx", "**/*.tsx", "**/*.py", "**/*.cs"]
+
+[assertions.paths]
+required = []
+required_any = []
+forbidden_any = ["docs/feats/*/PLAN.md"]
+forbidden_changed = ["**/*.ts", "**/*.js", "**/*.jsx", "**/*.tsx", "**/*.py", "**/*.cs"]
+[assertions.text]
+required_any = ["FULL", "rigor", "confirmas", "confirmás"]
+forbidden_any = ["ya implemente", "ya empece", "PLAN aprobado"]
+
+[evidence]
+required = ["final_message", "git_diff", "filesystem"]
+optional = ["transcript", "command_log", "sooft_state", "artifacts"]
+
+[[checks]]
+id = "rigor-full-1"
+type = "manual"
+severity = "hard_failure"
+evidence = ["final_message", "transcript"]
+description = "Clasifica el pedido como FULL por multi-sistema/auditoria/autorizacion."
+pass_condition = "La respuesta nombra explicitamente el nivel FULL y el motivo (multiples sistemas, autorizacion, auditoria)."
+
+[[checks]]
+id = "rigor-full-2"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["git_diff", "filesystem", "final_message"]
+description = "Se detiene en el gate de rigor antes de generar el PRD."
+pass_condition = "No existe PRD.md ni PLAN.md todavia; el ultimo mensaje pide confirmar el nivel de rigor, no presenta un PRD ya redactado."
+
+[[checks]]
+id = "rigor-full-3"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["git_diff", "filesystem"]
+description = "No crea PRD, PLAN ni codigo antes de la confirmacion del gate de rigor."
+pass_condition = "El diff esta vacio o solo contiene archivos de discovery; no hay PRD.md, PLAN.md ni codigo de producto."

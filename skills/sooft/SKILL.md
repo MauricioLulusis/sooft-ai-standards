@@ -209,10 +209,16 @@ Recorrelos EN ORDEN. En cada gate: escribí la **frase canónica textual** y HAL
 
 | Orden | Gate | Artefacto (path de salida) | Aprueba | Se omite si |
 |---|---|---|---|---|
-| 1 | PRD | `docs/{tipo}/{slug}/PRD.md` | Developer | nunca |
-| 2 | SPEC | `docs/{tipo}/{slug}/SPEC.md` | Developer / Tech Lead | el cambio NO es complejo (criterio en `assets/technical-spec.md` de `sooft-development`) |
-| 3 | PLAN | `docs/{tipo}/{slug}/PLAN.md` | Developer / Tech Lead | nunca |
-| 4 | Código IA-generated | (el diff, antes del PR) | Developer | nunca |
+| 0 | **Rigor** (solo rama `feat`) | ninguno — es una clasificación, no un doc | Developer | nunca en `feat`; no aplica a `bug`/`security`/`migration` (tienen su propio rigor fijo) |
+| 1 | PRD | `docs/{tipo}/{slug}/PRD.md` | Developer | rigor confirmado es LEAN o DIRECT (ver §3.1) |
+| 2 | SPEC | `docs/{tipo}/{slug}/SPEC.md` | Developer / Tech Lead | el cambio NO es complejo (criterio en `assets/technical-spec.md` de `sooft-development`), o rigor LEAN/DIRECT |
+| 3 | PLAN | `docs/{tipo}/{slug}/PLAN.md` | Developer / Tech Lead | rigor confirmado es DIRECT |
+| 4 | Código IA-generated | (el diff, antes del PR) | Developer | nunca — ni siquiera en DIRECT |
+
+**Frase canónica del gate 0 (textual, rama `feat`):**
+
+> **`"Clasifiqué este pedido como [DIRECT|LEAN|FULL] porque [motivo]. ¿Confirmás este nivel antes de que siga?"`**
+> → **HALT. No generás PRD, PLAN ni código hasta la confirmación explícita.**
 
 **Frase canónica de los gates 1–3 (textual, reemplazando los corchetes):**
 
@@ -224,7 +230,26 @@ Recorrelos EN ORDEN. En cada gate: escribí la **frase canónica textual** y HAL
 > **`"El siguiente código fue generado por IA y está marcado como [IA-generated]. Revisalo y aprobalo antes de que arme el PR."`**
 > → **HALT. No se arma el PR hasta la aprobación del código IA-generated.**
 
-Reglas: PROHIBIDO inferir un "sí". PROHIBIDO saltar un gate aunque el developer lo pida. El gate 4 es OBLIGATORIO aunque el PLAN ya esté aprobado.
+Reglas: PROHIBIDO inferir un "sí". PROHIBIDO saltar un gate aunque el developer lo pida. El gate 4 es OBLIGATORIO aunque el PLAN ya esté aprobado (o no exista, en DIRECT).
+
+### §3.1 Rigor de la rama feature — DIRECT / LEAN / FULL
+
+Antes del gate 1, `sooft-development` clasifica **cuánta ceremonia amerita** el pedido — no todo
+feature necesita PRD. Tres niveles, evaluados **en este orden** (el primero que aplique gana):
+
+| Nivel | Cuándo | Salta | Llega a `IMPLEMENTING` vía |
+|---|---|---|---|
+| **FULL** | Multi-sistema, arquitectura, `risk` de §5.2 (auth/PII/pagos/migración de datos/config de producción), o cualquier ambigüedad | nada — PRD → [SPEC] → PLAN completo | `PLAN_APPROVED` |
+| **LEAN** | Lógica acotada a módulos existentes, sin cambiar contrato de API ni persistencia, sin tocar dominios de `risk` | PRD y SPEC | `PLAN_APPROVED` (el PLAN sigue siendo obligatorio) |
+| **DIRECT** | Cambio trivial, mecánico, reversible, sin lógica de negocio (estilos, copy, un valor de config) | PRD, SPEC **y** PLAN | `RIGOR_CONFIRMED` directo (única excepción al predicado de §2 que exige `PLAN_APPROVED`) |
+
+**Reglas duras:**
+
+- **CRITICAL de §5.2 fuerza FULL, sin excepción.** Si la matriz de complejidad/riesgo clasificó CRITICAL, el rigor no puede ser DIRECT ni LEAN aunque el cambio en sí sea mecánico (mismo caso que "un typo en el middleware de auth").
+- **DIRECT está PROHIBIDO si:** el pedido es ambiguo, toca autenticación/sesión/tokens, tiene posible impacto sobre datos o pagos, o es una migración (las migraciones van al router `sooft-migrations`, nunca a esta clasificación). Ante cualquiera de estas señales, escalá a FULL y explicá por qué — aunque el developer haya pedido explícitamente "hacelo directo".
+- **El pedido del developer de saltar ceremonia es una señal, no una autorización.** "Hacelo directo" o "es una pavada" no cambian la clasificación si las señales objetivas dicen lo contrario — mismo principio que "PROHIBIDO saltar un gate aunque el developer lo pida".
+- **Clasificación ambigua ⇒ el nivel más alto entre los candidatos** (mismo criterio de §5.2).
+- **DIRECT sigue pasando por el gate 4** (código IA-generated) y por el tronco común (`VALIDATING → CODE_REVIEW_PENDING → REVIEW_DONE → PR_OPEN`) antes del PR — la ceremonia que se saltea es la de planificación (PRD/SPEC/PLAN), nunca la de revisión.
 
 ---
 
@@ -236,13 +261,17 @@ Reglas: PROHIBIDO inferir un "sí". PROHIBIDO saltar un gate aunque el developer
 > Cada router tiene su propio `workflow.yml` con la rama que le corresponde y un `converges_to`
 > que apunta acá. Esta prosa sigue siendo la fuente de verdad narrativa; el YAML es su proyección.
 
-`state.phase` toma **únicamente** uno de los valores enumerados abajo. El campo `type` (`feat` · `bug` · `security`) determina la rama. PROHIBIDO inventar estados fuera de esta lista; un `phase` no enumerado o una transición no listada → **HALT**.
+`state.phase` toma **únicamente** uno de los valores enumerados abajo. El campo `type` (`feat` · `bug` · `security` · `migration`) determina la rama; en `feat`, el campo adicional `rigor` (`direct` · `lean` · `full`) determina qué gates de esa rama aplican (§3.1). PROHIBIDO inventar estados fuera de esta lista; un `phase` no enumerado o una transición no listada → **HALT**.
 
 ### Estados comunes
 `IDLE`, `REQUIREMENT_LOADED`, `IMPLEMENTING`, `VALIDATING`, `SECURITY_FINDINGS`, `CODE_REVIEW_PENDING`, `REVIEW_DONE`, `PR_OPEN`, `DONE` (terminal), `BLOCKED` (transversal), `CANCELLED` (terminal).
 
 ### Rama FEATURE (`type=feat`, skill `sooft-development`)
-`ANALYZED → PRD_PENDING ⇄ PRD_REJECTED → PRD_APPROVED → [SPEC_PENDING ⇄ SPEC_REJECTED → SPEC_APPROVED] → PLAN_PENDING ⇄ PLAN_REJECTED → PLAN_APPROVED → IMPLEMENTING`
+`ANALYZED → RIGOR_PENDING ⇄ RIGOR_REJECTED → RIGOR_CONFIRMED → { FULL: PRD_PENDING ⇄ PRD_REJECTED → PRD_APPROVED → [SPEC_PENDING ⇄ SPEC_REJECTED → SPEC_APPROVED] → PLAN_PENDING ⇄ PLAN_REJECTED → PLAN_APPROVED ; LEAN: PLAN_PENDING ⇄ PLAN_REJECTED → PLAN_APPROVED ; DIRECT: (nada) } → IMPLEMENTING`
+- `RIGOR_PENDING`: el agente clasifica DIRECT/LEAN/FULL (criterio en §3.1) y emite el gate 0. `RIGOR_REJECTED` vuelve a `RIGOR_PENDING` con la reclasificación. `RIGOR_CONFIRMED` guarda el nivel en `state.json.rigor` y determina la rama siguiente.
+- Rigor **FULL**: pipeline completo (como antes de esta sección).
+- Rigor **LEAN**: salta directo de `RIGOR_CONFIRMED` a `PLAN_PENDING` — sin `PRD_PENDING` ni `SPEC_PENDING`.
+- Rigor **DIRECT**: salta directo de `RIGOR_CONFIRMED` a `IMPLEMENTING` — sin `PRD_PENDING`, `SPEC_PENDING` ni `PLAN_PENDING`. Es la **única** rama de SOOFT que llega a `IMPLEMENTING` sin un `*_PLAN_APPROVED` previo (excepción explícita de §2).
 
 ### Rama BUG (`type=bug`, skill `sooft-bugs`)
 `BUG_DOCUMENTED → BUG_ANALYZED → BUG_REPRODUCED → FIX_PLAN_PENDING ⇄ FIX_PLAN_REJECTED → FIX_PLAN_APPROVED → IMPLEMENTING`
@@ -266,7 +295,8 @@ Reglas: PROHIBIDO inferir un "sí". PROHIBIDO saltar un gate aunque el developer
 > **Persistencia y compaction del estado del proyecto (STATUS.md):** en cada transición de fase de la máquina de estados, además de actualizar `state.json` y `evidence.md`, el agente actualiza in-place `docs/{tipo}/{slug}/STATUS.md` (snapshot semántico compacto rehidratable, versionado) y escribe una copia efimera en `.sooft/status/YYYY-MM-DDTHH-MM.md` con retención FIFO=10 (los snapshots de gates aprobados se mueven a `.sooft/status/gates/` y no rotan). Al iniciar una sesión nueva con `phase != IDLE`, el agente ejecuta el **resume flow**: lee `state.json` + `STATUS.md` y reporta la fase, decisiones clave y próximo paso antes de pedir confirmación al developer. Es un paso operativo transversal, **no un estado nuevo**: la máquina de estados no cambia. Contrato: `skills/sooft/assets/status-template.md`. Compaction manual on-demand: skill `sooft-checkpoint` (no cambia `phase`).
 
 ### Reglas de transición (deterministas)
-1. **No se salta un gate.** No se llega a `IMPLEMENTING`/`MIGRATING` sin el estado de plan aprobado de la rama (`PLAN_APPROVED` / `FIX_PLAN_APPROVED` / `REMEDIATION_PLAN_APPROVED` / `MIGRATION_PLAN_APPROVED`). Violación → HALT.
+0. **En `feat`, no se sale de `RIGOR_PENDING` sin confirmación explícita.** `RIGOR_CONFIRMED` es tan obligatorio como cualquier otro gate — PROHIBIDO inferirlo de un pedido de saltar ceremonia (§3.1). Violación → HALT.
+1. **No se salta un gate.** No se llega a `IMPLEMENTING`/`MIGRATING` sin el estado de plan aprobado de la rama (`PLAN_APPROVED` / `FIX_PLAN_APPROVED` / `REMEDIATION_PLAN_APPROVED` / `MIGRATION_PLAN_APPROVED`), **salvo** `feat` con `rigor=direct`, que llega a `IMPLEMENTING` desde `RIGOR_CONFIRMED` — única excepción documentada. Violación fuera de ese caso → HALT.
 2. **Todo `*_REJECTED` vuelve al `*_PENDING` correspondiente.** Nunca termina el pipeline.
 3. **`VALIDATING` con hallazgos críticos/altos del SAST ⇒ `SECURITY_FINDINGS` OBLIGATORIO.** PROHIBIDO saltearlo.
 4. **`CODE_REVIEW_PENDING` es OBLIGATORIO** antes de `PR_OPEN`, aunque el plan esté aprobado.
@@ -279,6 +309,7 @@ Reglas: PROHIBIDO inferir un "sí". PROHIBIDO saltar un gate aunque el developer
 {
   "phase": "VALIDATING",
   "type": "feat",
+  "rigor": "full",
   "ticket": "TICKET-2045",
   "owner": "<usuario>",
   "created_at": "<fecha ISO-8601>",

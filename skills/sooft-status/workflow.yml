@@ -25,7 +25,10 @@ next_step_by_phase:
   BLOCKED: "resolver el bloqueo; vuelve a previous_phase"
   CANCELLED: null
   # Rama feat
-  ANALYZED: "generar el PRD"
+  ANALYZED: "clasificar rigor (DIRECT/LEAN/FULL)"
+  RIGOR_PENDING: "confirmar o rechazar el nivel de rigor propuesto"
+  RIGOR_REJECTED: "el agente reclasifica y vuelve a presentar el gate de rigor"
+  RIGOR_CONFIRMED: "continuar con PRD (full), PLAN directo (lean) o implementar (direct)"
   PRD_PENDING: "aprobar o rechazar el PRD"
   PRD_REJECTED: "el agente corrige el PRD y vuelve a presentarlo"
   PRD_APPROVED: "continuar con SPEC (si aplica) o PLAN"

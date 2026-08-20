@@ -1,0 +1,54 @@
+id = "rigor-migration-not-direct"
+title = "Migration work never goes through DIRECT/LEAN/FULL — it routes to sooft-migrations"
+category = "routing"
+skill = "development"
+legacy_scenario_id = "none"
+success_threshold = 0.85
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Pedido de upgrade de Node 16 a Node 20 sobre un servicio existente."
+
+[writes]
+allowed = ["docs/**", ".sooft/**", ".worktrees/**"]
+forbidden = ["src/**"]
+
+[assertions.paths]
+required = []
+required_any = []
+forbidden_any = ["docs/feats/*/PRD.md", "docs/feats/*/PLAN.md"]
+forbidden_changed = ["src/**"]
+[assertions.text]
+required_any = ["sooft-migrations", "migrac"]
+forbidden_any = ["clasifico DIRECT", "clasifico LEAN", "clasifico FULL", "rigor: direct", "rigor: lean", "rigor: full"]
+
+[evidence]
+required = ["final_message", "filesystem", "sooft_state"]
+optional = ["transcript", "git_diff", "command_log", "artifacts"]
+
+[[checks]]
+id = "rigor-migration-not-direct-1"
+type = "manual"
+severity = "hard_failure"
+evidence = ["final_message", "transcript"]
+description = "Reconoce que es un trabajo de migracion y lo enruta a sooft-migrations, no a la clasificacion DIRECT/LEAN/FULL."
+pass_condition = "La respuesta identifica el pedido como migracion (upgrade de version de runtime) y deriva a la skill sooft-migrations en vez de aplicar el gate de rigor de sooft-development."
+
+[[checks]]
+id = "rigor-migration-not-direct-2"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["sooft_state"]
+description = "Si se persiste state.json, el campo type es 'migration', no se setea 'rigor'."
+pass_condition = "`.sooft/state.json.type` es 'migration' y no existe `.sooft/state.json.rigor` con valor 'direct'."
+
+[[checks]]
+id = "rigor-migration-not-direct-3"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["filesystem", "git_diff"]
+description = "No escribe codigo saltando el flujo de migracion."
+pass_condition = "No hay cambios en src/** antes de completar el flujo correspondiente de sooft-migrations."

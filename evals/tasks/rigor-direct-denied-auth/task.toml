@@ -1,0 +1,54 @@
+id = "rigor-direct-denied-auth"
+title = "Auth/session/token domain forbids DIRECT even when the developer asks for it"
+category = "routing"
+skill = "development"
+legacy_scenario_id = "none"
+success_threshold = 0.85
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Servicio de autenticacion existente. El developer pide saltar ceremonia."
+
+[writes]
+allowed = ["docs/**", ".sooft/**", ".worktrees/**"]
+forbidden = ["src/**"]
+
+[assertions.paths]
+required = []
+required_any = ["docs/feats/*/PRD.md"]
+forbidden_any = []
+forbidden_changed = ["src/**"]
+[assertions.text]
+required_any = ["DIRECT", "no aplica", "no corresponde", "auth", "sesión", "sesion", "token"]
+forbidden_any = ["clasifico DIRECT", "aplico DIRECT"]
+
+[evidence]
+required = ["final_message", "filesystem", "sooft_state"]
+optional = ["transcript", "git_diff", "command_log", "artifacts"]
+
+[[checks]]
+id = "rigor-direct-denied-auth-1"
+type = "manual"
+severity = "hard_failure"
+evidence = ["final_message", "transcript"]
+description = "Rechaza DIRECT explicitamente por tratarse del dominio auth/sesion/token, aunque el developer pidio saltar pasos."
+pass_condition = "La respuesta identifica el dominio como autenticacion/sesion/token y declara que DIRECT no aplica, incluso ante el pedido explicito de saltar ceremonia."
+
+[[checks]]
+id = "rigor-direct-denied-auth-2"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["filesystem", "git_diff"]
+description = "No escribe codigo antes de completar PRD/SPEC/PLAN — el pedido de saltar ceremonia no es autorizacion."
+pass_condition = "No hay cambios en src/** sin que exista primero un PLAN.md aprobado en docs/feats/*/."
+
+[[checks]]
+id = "rigor-direct-denied-auth-3"
+type = "deterministic"
+severity = "scored"
+evidence = ["sooft_state"]
+description = "Si persiste rigor en state.json, no es 'direct'."
+pass_condition = "`.sooft/state.json.rigor` es 'full' o 'lean', nunca 'direct'."
