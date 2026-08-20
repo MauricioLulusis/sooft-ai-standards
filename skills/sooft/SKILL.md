@@ -31,9 +31,9 @@ Las reglas de este documento son **deterministas**: cada condición tiene una ac
 
 La PRIMERA vez que cargás `sooft` en una sesión (solo la primera, no en los mensajes siguientes):
 
-1. **Banner (fallback — costo cero por defecto).** Normalmente el banner ASCII lo muestra el **hook `sessionStart`**, que hace `cat` de `~/.copilot/hooks/banner.txt` — lo imprime el harness, **0 tokens**. Por eso:
-   - Si **ya existe** `~/.copilot/hooks/banner.txt` → **NO lo imprimas vos**; de eso se encarga el hook.
-   - Solo imprimilo vos como **fallback** cuando el hook NO está (primera sesión antes de instalarlo, Claude Code, o entornos sin hook): leé el archivo `assets/banner.txt` de esta skill y reproducí su contenido EXACTO como primera acción visible, en bloque de código (triple backtick). `assets/banner.txt` es la **única fuente de verdad** del arte ASCII — no lo copies ni lo reescribas en el SKILL.
+1. **Banner (fallback — costo cero por defecto).** Normalmente el banner ASCII lo muestra el **hook de sesión** (ver §0.1 y `assets/hooks/session-start.yml`) instalado como adapter nativo de tu herramienta actual — lo imprime el harness, **0 tokens**. Por eso:
+   - Si el adapter de tu herramienta actual **ya está instalado** (Copilot: `~/.copilot/hooks/banner.txt` existe; Claude Code: hay un bloque `hooks.SessionStart` en `.claude/settings.json` con el `command` de `assets/hooks/adapters/claude.json`; otra herramienta: su propio adapter verificado) → **NO lo imprimas vos**; de eso se encarga el hook.
+   - Solo imprimilo vos como **fallback** cuando el hook todavía NO está instalado para tu herramienta actual (típicamente la primera sesión, antes de que corra el auto-setup de §0.1): leé el archivo `assets/banner.txt` de esta skill y reproducí su contenido EXACTO como primera acción visible, en bloque de código (triple backtick). `assets/banner.txt` es la **única fuente de verdad** del arte ASCII — no lo copies ni lo reescribas en el SKILL.
 
    > **OBLIGATORIO (solo en el caso fallback):** imprimir el banner es una tarea mecánica (SIMPLE, ver §5). En Claude Code, si lo renderiza el LLM, hacelo **con Haiku** (`claude-haiku-4-5-20251001`) — delegá a un subagente `model: haiku`. NUNCA gastes Sonnet ni Opus en el banner. (En Copilot/otros modelos, simplemente imprimilo.)
 
@@ -96,16 +96,18 @@ Este algoritmo es la parte determinista central: dado el mismo mensaje, la secue
 La **primera vez** que cargás `sooft` en la sesión (§0.0 punto 2), instalá el hook de sesión y los archivos que tu herramienta necesita: **leé y seguí el recurso `internal/sooft-bootstrap.md`** de esta skill, EN ORDEN. Ahí está el procedimiento completo (PASOS A–D: idempotencia, instalación sin preguntar, copia de `assets/` a user-level y repo-level, adapter por herramienta, y el HALT si faltan los assets).
 
 El hook de sesión tiene una única fuente de verdad, agnóstica a la herramienta:
-`assets/hooks/session-start.yml` (banner + mensaje de contexto). Cada herramienta con
-mecanismo de hooks nativo lo traduce a su propio formato — hay adapter ya implementado
-para Copilot y para Claude Code; para cualquier otra herramienta, PROHIBIDO inventar el
-formato sin confirmarlo primero contra su documentación real (ver PASO C.6).
+`assets/hooks/session-start.yml` (banner + mensaje de contexto), con su
+`algoritmo_universal` de 4 pasos: reusar un adapter ya verificado si existe (librería
+en `assets/hooks/adapters/`), construir y verificar uno nuevo si tu herramienta tiene
+un mecanismo de hooks confirmable, o no instalar nada si no se puede confirmar —
+PROHIBIDO inventar el formato de una herramienta sin esa confirmación (PASO C.1 de
+`sooft-bootstrap.md`). Copilot y Claude Code no son casos privilegiados: son dos
+adapters ya resueltos de ese mismo algoritmo, reutilizables por cualquier sesión.
 
 Resumen de lo que deja instalado:
 
-- Copilot: `~/.copilot/hooks/sooft.json` + `~/.copilot/hooks/banner.txt` (user-level) y `.github/hooks/sooft.json` (repo-level, versionado).
-- Claude Code: bloque `hooks.SessionStart` mergeado en `.claude/settings.json` (sin pisar hooks propios del equipo).
-- `.github/copilot-instructions.md` + `.github/prompts/*.prompt.md` → custom instructions always-on y slash commands de la GUI de Copilot (REGLA DE NO PISAR: si ya existen, no los sobreescribas).
+- Cualquier herramienta con adapter resuelto (hoy: Copilot, Claude Code): el hook de sesión nativo de esa herramienta, con el mismo banner y mensaje.
+- Copilot además: `.github/copilot-instructions.md` + `.github/prompts/*.prompt.md` → custom instructions always-on y slash commands de la GUI (REGLA DE NO PISAR: si ya existen, no los sobreescribas).
 
 Estos archivos son **stubs que delegan en las skills**; NO duplican la metodología. La fuente de verdad es siempre esta skill `sooft` y las que cita por nombre. SOOFT funciona igual sin ningún hook nativo — la misma regla ya vive en las instrucciones always-on; el hook es solo un atajo determinista y gratuito en tokens.
 

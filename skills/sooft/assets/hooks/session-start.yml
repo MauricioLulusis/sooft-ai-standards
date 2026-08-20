@@ -1,9 +1,10 @@
 # Spec canónica del hook `session_start`, agnóstica a la herramienta.
-# Fuente de verdad del CONTENIDO (banner + mensaje). Cada herramienta con mecanismo de
-# hooks nativo traduce esto a su propio formato — ver `adapters` abajo. Ninguna
-# herramienta es obligatoria: sin hook nativo, SOOFT sigue funcionando igual porque el
-# mismo mensaje ya vive en AGENTS.md / *-instructions.md (siempre activo, sin depender
-# de un evento determinista).
+#
+# Fuente de verdad del CONTENIDO (banner + mensaje) para CUALQUIER herramienta de IA —
+# Claude, Copilot, Cursor, o una que todavía no existe. Ninguna herramienta es
+# obligatoria ni especial: sin hook nativo, SOOFT funciona igual, porque el mismo
+# mensaje ya vive en AGENTS.md / *-instructions.md (siempre activo, sin depender de un
+# evento determinista).
 
 event: session_start
 description: >
@@ -23,43 +24,35 @@ additional_context: >
   Analizando...). Entregá el resultado directamente. El esfuerzo no cambia, solo el
   texto visible.
 
-# Cómo se traduce este spec a cada herramienta. `status: implementado` = existe un
-# adapter real, versionado, probado. `status: pendiente_por_diseño` = a propósito NO
-# hay un archivo hardcodeado — inventar el formato de una herramienta sin verificarlo
-# violaría la regla de no-invención de esta skill (ver internal/sooft-bootstrap.md).
-adapters:
-  copilot:
-    status: implementado
-    formato: copilot-agent-hooks-json (bloques bash + powershell separados)
-    archivos:
-      - "~/.copilot/hooks/sooft.json (user-level, todas las sesiones de esa máquina)"
-      - ".github/hooks/sooft.json (repo-level, versionado con el proyecto)"
-    fuente: assets/sooft.json
-    nota: >
-      El banner_fallback y additional_context de assets/sooft.json deben ser
-      idénticos en sustancia a los de este spec. Si divergen, es un bug de
-      sincronización — no una variante intencional de contenido.
+# Algoritmo único, igual para CUALQUIER herramienta — sin excepciones ni casos
+# privilegiados. Copilot y Claude Code no son "las dos soportadas": son, simplemente,
+# las dos veces que ya se corrió este mismo algoritmo y se guardó el resultado.
+algoritmo_universal:
+  - paso: 1
+    accion: >
+      ¿Ya existe un adapter verificado para tu herramienta actual en
+      `adapters/<herramienta>.json` (o `sooft.json` para Copilot, ver adapters/README.md)?
+      Usalo tal cual — no reinventes nada.
+  - paso: 2
+    accion: >
+      Si no existe: ¿tu herramienta actual tiene un mecanismo de hooks nativo (evento
+      de inicio de sesión o equivalente) que puedas CONFIRMAR con certeza en este
+      momento, contra su propia documentación real? Si sí, traducí este spec
+      (banner_fallback + additional_context) a ese formato.
+  - paso: 3
+    accion: >
+      Si NO podés confirmarlo: NO instales nada. PROHIBIDO inventar el nombre de un
+      evento o la forma de un payload sin esa confirmación. Avisá al developer que el
+      hook nativo no se instaló para esta herramienta y seguí sin bloquear — SOOFT
+      funciona igual sin él.
+  - paso: 4
+    accion: >
+      Si en el paso 2 construiste y verificaste un adapter nuevo, guardalo en
+      `adapters/<herramienta>.json` antes de seguir. La librería de adapters crece con
+      el uso real, herramienta por herramienta — así el próximo developer con esa misma
+      herramienta ya la encuentra resuelta en el paso 1.
 
-  claude:
-    status: implementado
-    formato: claude-code-settings-json (hooks.SessionStart[].hooks[].command)
-    archivo: ".claude/settings.json"
-    fuente: assets/hooks/claude-settings-fragment.json
-    regla_de_merge: >
-      Es un único archivo JSON que puede tener contenido propio del developer.
-      MERGEAR el array de SessionStart dentro de la clave "hooks" existente —
-      PROHIBIDO sobreescribir el archivo entero o pisar hooks ya configurados
-      por el equipo.
-
-  cualquier_otra_herramienta:
-    status: pendiente_por_diseño
-    regla: >
-      Si el harness actual declara su propio mecanismo de hooks nativo (nombre de
-      evento, formato de payload), traducí este spec a ese formato SOLO después de
-      confirmar la sintaxis real de esa herramienta contra su propia documentación.
-      PROHIBIDO inventar el nombre del evento o la forma del payload si no está
-      confirmado. Si no se puede confirmar, NO instales nada: avisá al developer y
-      seguí sin hook nativo — degradación segura, nunca bloqueante.
+adapters_verificados: assets/hooks/adapters/ (librería creciente, ver adapters/README.md)
 
 fallback_sin_hooks: >
   Ningún hook es obligatorio para que SOOFT funcione: es un atajo determinista y

@@ -1,5 +1,5 @@
 {
-  "_comment": "Adapter de assets/hooks/session-start.yml para Claude Code. MERGEAR el array de SessionStart dentro de la clave \"hooks\" de .claude/settings.json existente — nunca sobreescribir el archivo entero.",
+  "_comment": "Adapter verificado de ../session-start.yml para Claude Code (herramienta: claude). MERGEAR el array de SessionStart dentro de la clave \"hooks\" de .claude/settings.json existente — nunca sobreescribir el archivo entero. No es un caso especial: es un ejemplo ya resuelto del mismo algoritmo que cualquier otra herramienta puede seguir (ver ../README.md).",
   "hooks": {
     "SessionStart": [
       {
