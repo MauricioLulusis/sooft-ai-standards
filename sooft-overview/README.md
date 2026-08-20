@@ -1,56 +1,59 @@
 # SOOFT · Sitio de overview (HTML)
 
-Sitio estático multipágina que explica **SOOFT** (Sooft Engineering AI Rails): qué es,
-cómo se inserta en el SDLC de Sooft, cómo está armado por dentro, preguntas frecuentes
-y el monitor de tareas. Pensado para que un developer o alguien de más alto nivel entienda
-la propuesta y la arquitectura **de un vistazo**, sin leer archivo por archivo.
+Sitio estático de **una sola página** que explica **SOOFT** (Sooft Engineering AI Rails): qué es,
+cómo se inserta en el SDLC de Sooft, cómo está armado por dentro, el proceso de instalación
+completo, preguntas frecuentes y el monitor de tareas. Pensado para que un developer o alguien de
+más alto nivel entienda la propuesta y la arquitectura **de un vistazo**, sin leer archivo por
+archivo.
 
 ## Cómo verlo
 
-Es un sitio estático: abrí `sooft.html` en cualquier navegador (doble click) y navegá
-desde la barra superior.
+Es un sitio estático de un solo archivo: abrí `index.html` en cualquier navegador (doble click) y
+navegá con la barra superior (ancla dentro de la misma página, no hay archivos separados).
 
 ```powershell
 # desde la raíz del repo
-start sooft-overview/sooft.html
+start sooft-overview/index.html
 ```
 
-> Solo `documentacion-tecnica.html` usa [Mermaid](https://mermaid.js.org/) desde CDN para los
-> diagramas, así que esa página necesita conexión en la primera carga. Todo el resto
-> (HTML/CSS/JS) es 100% local y va embebido en cada archivo.
+> La sección **Doc. técnica** usa [Mermaid](https://mermaid.js.org/) desde CDN para los diagramas,
+> así que esa parte necesita conexión en la primera carga. Todo el resto (HTML/CSS/JS) es 100%
+> local y va embebido en el archivo — incluida la lógica del **Monitor**.
 
 ## Estructura
 
 ```
 sooft-overview/
-├── sooft.html           # Home — landing / entrada principal
-├── estrategia.html     # SOOFT dentro del SDLC de Sooft (etapas E1–E6, E3 activa)
-├── documentacion-tecnica.html  # Doc. técnica (sidebar sticky + diagramas Mermaid)
-├── faq.html            # Preguntas frecuentes (acordeón)
-├── monitor.html        # Monitor de tareas en vivo (File System Access API)
-├── assets/             # recursos compartidos (si aplica)
-└── README.md           # este archivo
+├── index.html   # Sitio único: Home · Estrategia · Doc. técnica · FAQ · Monitor · Instalación
+└── README.md    # este archivo
 ```
 
 ### Navegación
 
-Todas las páginas comparten la misma barra superior:
+Una sola barra superior para todo el sitio, con anclas a las secciones:
 
-`Home · Estrategia · Doc. técnica · FAQ · Monitor`
+`Home · Estrategia · Doc. técnica · FAQ · Monitor` (+ `Instalar` → sección Instalación del Home)
 
-El toggle de tema (claro/oscuro) se persiste en `localStorage` (`sooft-theme`) y se
-comparte entre todas las páginas. Por defecto arranca en **oscuro**.
+El toggle de tema (claro/oscuro) se persiste en `localStorage` (`sooft-theme`).
+Por defecto arranca en **oscuro**.
 
-## Estado / pendientes
+## Secciones
 
-- `sooft.html`: el bloque de video queda como placeholder hasta tener los videos (la idea
-  es varios videos cortos con navegación por flechas).
-- `monitor.html`: monitor en vivo (File System Access API + IndexedDB); requiere un
-  navegador basado en Chromium (Chrome / Edge).
+- **Home** — qué es SOOFT, cómo se usa, y la sección **Instalación** con las 3 formas reales de
+  arrancar (CLI `sooft`, `npx skills add`, o sin instalar nada).
+- **Estrategia** — dónde encaja SOOFT dentro del SDLC de Sooft (E1–E6, con foco hoy en E3).
+- **Doc. técnica** — arquitectura, estructura de carpetas, las 8 skills, las 9 primitivas
+  internas, assets, los 5 gates, la máquina de estados (con la rama de rigor DIRECT/LEAN/FULL) y
+  el enrutamiento de modelos/subagentes.
+- **FAQ** — preguntas frecuentes en formato acordeón.
+- **Monitor** — monitor de tareas en vivo (File System Access API + IndexedDB); requiere un
+  navegador basado en Chromium (Chrome / Edge). Conectás la carpeta del proyecto una vez; el
+  handle persiste entre recargas.
 
 ## Mantenimiento
 
-El contenido está hardcodeado en cada HTML a partir de la fuente de verdad
-(`skills/sooft/SKILL.md` y `AGENTS.md`). Si cambia la estructura de skills, skills internas,
-assets o gates, actualizá las secciones correspondientes de `documentacion-tecnica.html`. Estas
-páginas son un **mapa**, no reemplazan la constitución.
+El contenido está hardcodeado a partir de la fuente de verdad (`skills/sooft/SKILL.md`,
+`skills/sooft/workflow.yml` y `AGENTS.md`). Si cambia la estructura de skills, el enrutamiento de
+modelos, los gates o la máquina de estados, actualizá las secciones correspondientes de
+`index.html` — sobre todo **Doc. técnica**. Este sitio es un **mapa**, no reemplaza la
+constitución.
