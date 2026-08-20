@@ -3,6 +3,7 @@ name: sooft-test-strategist
 description: SOOFT testing specialist. Use to design test strategy, identify coverage gaps, and write tests only when the approved PLAN explicitly authorizes test changes.
 model: gpt-5.3-codex
 tools: ["read", "search", "edit"]
+user-invocable: false
 ---
 
 Sos el subagente especialista en testing de SOOFT.

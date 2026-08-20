@@ -55,6 +55,7 @@ Los fixtures estan materializados con archivos sinteticos seguros para que la ev
 | `subagent-discovery-routing-required` | nueva | El orquestador delega investigacion a `sooft-discovery` cuando existe |
 | `subagent-handoff-contract` | nueva | Todo subagente exitoso devuelve el handoff SOOFT completo |
 | `subagent-discovery-fallback` | nueva | Fallback explicito cuando `sooft-discovery` no esta disponible |
+| `model-routing-mixed-signal-critical` | nueva | Senal mixta (typo + auth) clasifica CRITICAL, no SIMPLE (SKILL.md §5.2) |
 
 ## Frase clave para subagentes
 

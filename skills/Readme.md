@@ -9,11 +9,19 @@ Estas son las skills que el developer invoca directamente con un slash command o
 | Skill                       | Para qué                                                                                                                                        |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`sooft`**                  | **La constitución.** Cargala SIEMPRE primero: principios, gates de aprobación, máquina de estados, switcheo de modelos y reglas no negociables. |
-| `sooft-development`          | **Router** de la rama FEATURE: feature, refactor, migración                                                                                     |
+| `sooft-development`          | **Router** de la rama FEATURE: feature nueva o refactor                                                                                         |
 | `sooft-bugs`                 | **Router** de la rama BUG: bug, regresión, comportamiento roto                                                                                  |
 | `sooft-security-remediation` | **Router** de la rama SECURITY: vulnerabilidades, CVEs, auditorías                                                                              |
+| `sooft-migrations`           | **Router** de la rama MIGRATION: migrar de versión o de tecnología                                                                              |
 | `sooft-status`               | Ver estado actual del workflow                                                                                                                  |
 | `sooft-incident-response`    | Incidente en producción                                                                                                                         |
+| `sooft-checkpoint`           | Forzar un snapshot de `STATUS.md` sin cambiar de fase                                                                                           |
+
+Cada una de estas 8 skills trae, junto a su `SKILL.md`, un `workflow.yml`: la misma máquina de
+estados (o secuencia, para las utilitarias) en formato declarativo YAML, agnóstico a la
+herramienta — para que un runtime que no sea un LLM leyendo Markdown también pueda validar
+transiciones. `SKILL.md` sigue siendo la fuente de verdad narrativa; `workflow.yml` es su
+proyección estructurada.
 
 ## Primitivas internas — recursos de `sooft` (NO son slash commands)
 

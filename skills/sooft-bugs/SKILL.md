@@ -7,6 +7,9 @@ description: Usar cuando hay un bug, regresión o comportamiento roto; orquesta 
 
 > Esta skill es parte de SOOFT. Antes de usarla, seguí la skill `sooft` (principios, gates de aprobación, máquina de estados y reglas no negociables).
 
+> **Proyección estructurada:** la máquina de estados de esta rama también vive en `workflow.yml`
+> (mismo directorio) — formato declarativo, agnóstico a la herramienta.
+
 Este skill es un router de la rama `bug`. Conduce la máquina de estados de SOOFT y delega
 cada paso a skills chicos.
 

@@ -1,0 +1,51 @@
+# skills/sooft-security-remediation/workflow.yml — rama SECURITY (type: security).
+# Converge en skills/sooft/workflow.yml#IMPLEMENTING.
+
+skill: sooft-security-remediation
+kind: router
+type: security
+
+entry:
+  from: IDLE
+  on: discovery_complete
+  to: FINDINGS_DOCUMENTED
+
+states:
+  FINDINGS_DOCUMENTED:
+    description: Hallazgo(s) de seguridad relevados (SAST, pentest, reporte manual).
+
+  SCOPE_PENDING:
+    gate:
+      driver: assets/security-scope.md
+      approver: developer
+      description: Confirmar qué hallazgos entran en el alcance de esta remediación — PROHIBIDO expandir por cuenta propia.
+
+  SCOPE_CONFIRMED: {}
+
+  REMEDIATION_PLAN_PENDING:
+    gate:
+      artifact: docs/security/{slug}/REMEDIATION_PLAN.md
+      approver: developer
+      phrase: "REMEDIATION_PLAN listo en {path}. Revisá antes de que continúe."
+
+  REMEDIATION_PLAN_REJECTED:
+    returns_to: REMEDIATION_PLAN_PENDING
+
+  REMEDIATION_PLAN_APPROVED: {}
+
+transitions:
+  - {from: FINDINGS_DOCUMENTED, to: SCOPE_PENDING, on: findings_relevados}
+  - {from: SCOPE_PENDING, to: SCOPE_CONFIRMED, on: developer_confirms_scope}
+  - {from: SCOPE_CONFIRMED, to: REMEDIATION_PLAN_PENDING, on: plan_drafted}
+  - {from: REMEDIATION_PLAN_PENDING, to: REMEDIATION_PLAN_REJECTED, on: developer_rejects}
+  - {from: REMEDIATION_PLAN_REJECTED, to: REMEDIATION_PLAN_PENDING, on: plan_redrafted}
+  - {from: REMEDIATION_PLAN_PENDING, to: REMEDIATION_PLAN_APPROVED, on: developer_approves}
+
+rules:
+  no_fixes_before_plan_approved: "PROHIBIDO aplicar fixes hasta phase == REMEDIATION_PLAN_APPROVED o IMPLEMENTING."
+  scope_never_expands_unilaterally: "PROHIBIDO remediar hallazgos fuera del scope confirmado sin volver a este gate."
+
+converges_to: "skills/sooft/workflow.yml#IMPLEMENTING"
+converge_event: remediation_plan_approved
+
+artifacts_root: docs/security/{slug}/

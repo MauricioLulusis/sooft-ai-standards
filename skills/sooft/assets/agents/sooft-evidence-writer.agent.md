@@ -3,6 +3,7 @@ name: sooft-evidence-writer
 description: SOOFT evidence writer. Use to update .sooft/evidence.md, summarize validations, record decisions, list modified files, and keep audit trail complete without approving gates.
 model: claude-haiku-4.5
 tools: ["read", "search", "edit"]
+user-invocable: false
 ---
 
 Sos el subagente de evidencia y auditoría de SOOFT.

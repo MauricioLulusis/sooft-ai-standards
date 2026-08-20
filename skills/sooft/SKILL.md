@@ -109,6 +109,8 @@ Estos archivos son **stubs que delegan en las skills**; NO duplican la metodolog
 
 Cuando el entorno sea **GitHub Copilot CLI** y existan custom agents en `.github/agents/`, el orquestador SOOFT delega trabajo especializado a esos subagentes para usar contexto aislado, tools acotadas y modelos por rol: siempre que haya un subagente aplicable, lo usa antes de resolver con el agente principal. El agente principal conserva la orquestación, `.sooft/state.json`, gates, frases canónicas, evidencia y aprobaciones humanas.
 
+> **Los 10 subagentes están ocultos (`user-invocable: false`, ver §5.1).** La invocación de abajo (`@sooft-discovery`, `--agent sooft-discovery`) es **programática, del orquestador** — no aparecen en el selector manual del developer. El developer solo ve e invoca los routers (`/sooft-development`, etc.).
+
 **Investigación/discovery:** si el pedido del developer implica investigar, explorar, analizar, revisar, encontrar o diagnosticar código/contexto, usá `sooft-discovery` para la exploración read-only siempre que esté disponible; el orquestador sintetiza el resultado a partir del handoff. Invocación explícita en Copilot CLI: `@sooft-discovery <pedido>` en sesión interactiva, o `copilot --agent sooft-discovery -p "<pedido de discovery read-only>"` en una corrida automatizada. Solo ejecutá el recurso directamente si el subagente no existe, no está disponible o el pedido es una consulta pura que no requiere leer el repo; en ese caso registrá el fallback.
 
 **Reglas duras:**
@@ -228,6 +230,12 @@ Reglas: PROHIBIDO inferir un "sí". PROHIBIDO saltar un gate aunque el developer
 
 ## §4. Máquina de estados
 
+> **Proyección estructurada:** el tronco común de esta máquina también vive en `workflow.yml`
+> (mismo directorio) en formato declarativo YAML, agnóstico a la herramienta — states,
+> transitions y rules parseables por cualquier runtime, no solo por un LLM leyendo esta sección.
+> Cada router tiene su propio `workflow.yml` con la rama que le corresponde y un `converges_to`
+> que apunta acá. Esta prosa sigue siendo la fuente de verdad narrativa; el YAML es su proyección.
+
 `state.phase` toma **únicamente** uno de los valores enumerados abajo. El campo `type` (`feat` · `bug` · `security`) determina la rama. PROHIBIDO inventar estados fuera de esta lista; un `phase` no enumerado o una transición no listada → **HALT**.
 
 ### Estados comunes
@@ -283,17 +291,145 @@ Reglas: PROHIBIDO inferir un "sí". PROHIBIDO saltar un gate aunque el developer
 
 ---
 
-## §5. Switcheo de modelos por complejidad
+## §5. Enrutamiento de modelos y subagentes
 
-Base: **Sonnet**. Antes de actuar, clasificá el pedido y elegí modelo con esta tabla. El developer no decide esto.
+Base: **Sonnet**. El developer **no elige el modelo ni el subagente por defecto** — el orquestador
+clasifica cada pedido con la matriz de §5.2 y decide. El catálogo completo de subagentes, sus
+modelos y fallbacks documentados vive en `.github/agents/MODELS.md`; esta sección define **cómo
+se clasifica** y **qué ruta de subagentes dispara cada nivel**.
 
-| Nivel | Disparadores (cualquiera ⇒ ese nivel) | Modelo |
+### §5.1 Subagentes ocultos — el developer ve routers, no subagentes
+
+Los 10 subagentes de Copilot CLI (`sooft-discovery`, `sooft-prd-writer`, `sooft-spec-architect`,
+`sooft-plan-writer`, `sooft-bug-analyst`, `sooft-test-strategist`, `sooft-security-reviewer`,
+`sooft-code-reviewer`, `sooft-evidence-writer`, `sooft-release-writer`) se declaran con
+`user-invocable: false`: no aparecen en el selector manual (`--agent`, autocomplete de `@`) ni el
+developer los elige — son invocables **únicamente** de forma programática, por el orquestador.
+
+Lo único que el developer ve e invoca son los **routers**: `/sooft`, `/sooft-development`,
+`/sooft-bugs`, `/sooft-security-remediation`, `/sooft-migrations`, `/sooft-status`,
+`/sooft-incident-response`, `/sooft-checkpoint`. Cuántos subagentes existan detrás, y cuáles
+corren para un pedido dado, es un detalle de implementación del orquestador — no algo que el
+developer configure sesión a sesión.
+
+> **Degradación con gracia.** Si el entorno no soporta `user-invocable` o no soporta subagentes en
+> absoluto (herramientas sin ese mecanismo), esto no es un error: el agente principal aplica el
+> mismo criterio de clasificación (§5.2) y ejecuta el trabajo él mismo, sin la separación en
+> subagentes. El enrutamiento *por subagente* es una optimización de plataformas que lo soportan,
+> no una dependencia dura de la metodología — ver principio #7 (tool-agnostic).
+
+### §5.2 Matriz de complejidad y riesgo
+
+La clasificación **NO se basa solo en palabras clave** del pedido ("arquitectura", "bug",
+"seguridad"). Se basa en señales estructurales concretas:
+
+| Factor | Cómo se mide |
+|---|---|
+| `files_affected` | Bajo: 1–3 · Medio: 4–10 · Alto: 11+ |
+| `risk` (dominio) | `authentication`, `authorization`, `payments`, `database_migration`, `production_config`, `personal_data` ⇒ escala automáticamente a **CRITICAL** |
+| `context_size` | Bajo: archivo aislado · Medio: módulo único · Alto: multi-módulo o repo completo |
+| `reasoning` | Bajo: cambio mecánico · Medio: decisión de implementación · Alto: trade-off arquitectónico |
+
+**Evaluá en este orden — el primer nivel que matchee gana, sin excepción:**
+
+1. **CRITICAL** — cualquier disparador de `risk` de la tabla arriba, aunque el resto de las señales sea bajo (ej. "es solo un typo, pero es en el middleware de auth" → CRITICAL).
+2. **COMPLEX** — `files_affected` alto, `context_size` alto, `reasoning` alto: arquitectura, refactor grande, migración, concurrencia, causa raíz desconocida, performance crítico, rollback.
+3. **SIMPLE** — typo, renombrar, formatear, comentario, status, "qué es"/"cómo funciona", pedido < 7 palabras, `files_affected` y `reasoning` bajos.
+4. **STANDARD** — todo lo demás (default).
+
+**Clasificación ambigua o de baja confianza ⇒ tratá como el nivel más alto entre los candidatos.**
+El costo de sobre-clasificar (más caro, más lento) es menor que el de sub-clasificar un caso
+crítico.
+
+### §5.3 Modelo por nivel
+
+| Nivel | Modelo | Notas |
 |---|---|---|
-| **COMPLEX** | arquitectura, seguridad, auth, cifrado, migración, concurrencia, PII, refactor grande, performance crítico, rollback | Opus (`claude-opus-4-8`) |
-| **SIMPLE** | typo, renombrar, formatear, comentario, status, "qué es", "cómo funciona", pedido < 7 palabras | Haiku (`claude-haiku-4-5-20251001`) |
-| **STANDARD** | todo lo demás (default) | Sonnet (`claude-sonnet-4-6`) |
+| **CRITICAL** | Opus (`claude-opus-4-8`) | + `sooft-security-reviewer` obligatorio en la ruta, sin excepción. |
+| **COMPLEX** | Opus (`claude-opus-4-8`) | |
+| **STANDARD** | Sonnet (`claude-sonnet-4-6`) | Default. |
+| **SIMPLE** | Haiku (`claude-haiku-4-5-20251001`) | |
 
-**Regla de prioridad determinista:** evaluá COMPLEX primero. **Si hay CUALQUIER disparador COMPLEX, el nivel es COMPLEX**, aunque también haya disparadores SIMPLE. Recién si no hay ninguno COMPLEX evaluás SIMPLE; si tampoco, STANDARD. La rama `sooft-security-remediation` es **siempre** Opus. **NUNCA** degrades a Haiku algo que toca seguridad, arquitectura o escritura de código de producción. Al escalar a Opus: decílo explícitamente y por qué.
+La rama `sooft-security-remediation` es **siempre** CRITICAL como mínimo, independientemente de
+la clasificación de discovery. **NUNCA** degrades a Haiku algo que toca seguridad, arquitectura o
+escritura de código de producción. Al escalar a Opus: decílo explícitamente y por qué.
+
+### §5.4 Reglas de enrutamiento (`routing_rules`)
+
+Traducen el nivel en una **ruta de subagentes** — no solo qué modelo, sino cuáles corren:
+
+```yaml
+routing_rules:
+  critical:
+    conditions: [authentication_changed, authorization_changed, personal_data_involved,
+                 payment_flow_changed, database_migration, production_infrastructure]
+    route: [sooft-discovery, sooft-plan-writer, sooft-security-reviewer, sooft-code-reviewer]
+  complex:
+    conditions: [files_affected_greater_than_10, multiple_modules, architectural_decision,
+                 concurrency, unknown_root_cause]
+    route: [sooft-discovery, sooft-spec-architect, sooft-plan-writer, sooft-code-reviewer]
+  standard:
+    conditions: [normal_feature, isolated_bug, api_endpoint, business_logic_change]
+    route: [sooft-discovery, sooft-plan-writer, sooft-test-strategist]
+  simple:
+    conditions: [documentation, boilerplate, formatting, simple_explanation]
+    route: [sooft-discovery]
+```
+
+**Regla de oro:** el nivel CRITICAL siempre incluye a `sooft-security-reviewer` en la ruta, sin
+excepción y sin depender de que la clasificación automática lo detecte solo por palabras clave.
+
+### §5.5 Gobierno de fallback y degradación
+
+- Cada subagente declara modelos en orden de prioridad (`.github/agents/MODELS.md`). El sistema
+  intenta el primero; si no está disponible, sigue con el siguiente documentado.
+- **Para rutas CRITICAL, el fallback NUNCA incluye un modelo de perfil rápido/económico.** Si
+  ningún modelo de razonamiento avanzado está disponible, el comportamiento correcto es
+  **bloquear la tarea y notificar al developer**, no continuar con un modelo de menor capacidad.
+  Preferí indisponibilidad temporal a una revisión de seguridad degradada.
+- **`sooft-code-reviewer` nunca corre con el mismo modelo que implementó el cambio.** Si la
+  implementación corrió en Sonnet (nivel STANDARD), el review no puede volver a correr en Sonnet:
+  escalá el reviewer al modelo de la fila COMPLEX de `MODELS.md`, o documentá la excepción en
+  `.sooft/evidence.md`.
+- **Ninguna tarea cambia de modelo dentro de una misma respuesta ya iniciada.** El cambio de
+  modelo ocurre únicamente en los límites de etapa (cuando el orquestador delega a otro
+  subagente), nunca mensaje a mensaje ni llamada a llamada.
+
+### §5.6 Gate humano — nunca reemplazado por el reviewer automático
+
+Para toda tarea CRITICAL (autenticación, pagos, migraciones de datos, infraestructura de
+producción, PII), la aprobación de `sooft-security-reviewer` **no reemplaza** el gate 4 (revisión
+humana, §3) antes de abrir el PR. El enrutamiento automático reduce el trabajo de clasificación y
+primera revisión — la responsabilidad final en estos dominios sigue siendo del developer/tech
+lead.
+
+### §5.7 Observabilidad
+
+Por cada tarea, `internal/sooft-evidence.md` registra: nivel asignado (CRITICAL/COMPLEX/STANDARD/
+SIMPLE) y qué señal lo disparó, la ruta de subagentes ejecutada y el modelo real usado en cada
+paso (incluye si hubo fallback), y las correcciones humanas posteriores al resultado entregado.
+Es la base para ajustar `routing_rules` con datos reales — no solo diseño teórico — si en el
+futuro se automatiza esa revisión.
+
+### §5.8 Modo manual — puerta trasera oculta (opt-in explícito)
+
+Por defecto el enrutamiento es automático y silencioso: SOOFT nunca pregunta el modelo al
+arrancar una sesión ni ofrece la opción espontáneamente en la conversación. El modo manual existe
+pero queda oculto hasta que el developer lo pide con una intención **clara e inequívoca** (ej.
+"quiero elegir yo el modelo") — un pedido puntual tipo "probá esta tarea con otro modelo" es
+acotado a esa tarea, no activa el modo manual de la sesión.
+
+- Activado el modo manual, los subagentes corren con el modelo que el developer tiene activo en
+  su selector, en vez del que asignaría §5.3.
+- **Esto nunca aplica a la ruta CRITICAL.** `sooft-security-reviewer` y el gate humano de §5.6
+  corren siempre, en ambos modos, sin excepción — la puerta trasera no da control sobre rutas
+  críticas de seguridad, en ningún escenario.
+- El modo elegido se guarda como preferencia de sesión y se resuelve con lógica determinista
+  (no es un juicio que el orquestador repite en cada mensaje), antes de que corra la
+  clasificación de discovery.
+- Dónde se documenta la existencia de este modo (README, `/sooft --help` o equivalente) es
+  responsabilidad de la documentación del agente — no de la conversación: SOOFT no la ofrece
+  activamente.
 
 ---
 

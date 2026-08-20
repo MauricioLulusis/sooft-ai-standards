@@ -7,6 +7,9 @@ description: Ejecuta una compaction manual del snapshot de estado del proyecto (
 
 > Esta skill es parte de SOOFT. Antes de usarla, seguí la skill `sooft` (principios, gates de aprobación, máquina de estados y reglas no negociables). Este skill **NO cambia la fase** del workflow, solo dispara un snapshot manual.
 
+> **Proyección estructurada:** los pasos de este skill también viven en `workflow.yml` (mismo
+> directorio) — formato declarativo, agnóstico a la herramienta.
+
 ## Qué hace
 
 1. Lee `.sooft/state.json`. Si no existe o `phase == IDLE`: informa que no hay workflow activo y sugiere `/sooft`.

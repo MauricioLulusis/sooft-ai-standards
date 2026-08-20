@@ -1,0 +1,63 @@
+# skills/sooft-status/workflow.yml — utilidad read-only, no dirige ninguna rama de la máquina
+# de estados. Proyecta la tabla next_step (SKILL.md, Paso 5) como datos, para que cualquier
+# runtime pueda resolver "qué sigue" sin re-parsear la tabla en Markdown.
+
+skill: sooft-status
+kind: utility
+mutates_state: false
+
+reads:
+  - .sooft/state.json
+  - .sooft/config.json
+  - "docs/{tipo}/{slug}/STATUS.md"
+
+next_step_by_phase:
+  # Tronco común
+  IDLE: init
+  REQUIREMENT_LOADED: "development (feat) · bugs (bug) · security-remediation (security)"
+  IMPLEMENTING: "continuar implementación o ejecutar /review"
+  VALIDATING: "ejecutar /review: tests, linter, análisis de calidad, SAST + análisis del diff"
+  SECURITY_FINDINGS: "remediar hallazgos críticos/altos del SAST, luego volver a VALIDATING"
+  CODE_REVIEW_PENDING: "revisar y aprobar el código [IA-generated]"
+  REVIEW_DONE: "abrir el PR en la rama target (acción manual)"
+  PR_OPEN: "esperar aprobación del PR"
+  DONE: null
+  BLOCKED: "resolver el bloqueo; vuelve a previous_phase"
+  CANCELLED: null
+  # Rama feat
+  ANALYZED: "generar el PRD"
+  PRD_PENDING: "aprobar o rechazar el PRD"
+  PRD_REJECTED: "el agente corrige el PRD y vuelve a presentarlo"
+  PRD_APPROVED: "continuar con SPEC (si aplica) o PLAN"
+  SPEC_PENDING: "aprobar o rechazar la SPEC"
+  SPEC_REJECTED: "el agente corrige la SPEC y vuelve a presentarla"
+  SPEC_APPROVED: "continuar con el PLAN"
+  PLAN_PENDING: "aprobar o rechazar el PLAN"
+  PLAN_REJECTED: "el agente corrige el PLAN y vuelve a presentarlo"
+  PLAN_APPROVED: implementar
+  # Rama bug
+  BUG_DOCUMENTED: "analizar la causa raíz"
+  BUG_ANALYZED: "escribir el test de reproducción"
+  BUG_REPRODUCED: "generar el FIX_PLAN"
+  FIX_PLAN_PENDING: "aprobar o rechazar el FIX_PLAN"
+  FIX_PLAN_REJECTED: "el agente corrige el FIX_PLAN y vuelve a presentarlo"
+  FIX_PLAN_APPROVED: "implementar el fix"
+  # Rama security
+  FINDINGS_DOCUMENTED: "confirmar el scope a remediar"
+  SCOPE_PENDING: "el developer confirma severidades/IDs en scope"
+  SCOPE_CONFIRMED: "generar el REMEDIATION_PLAN"
+  REMEDIATION_PLAN_PENDING: "aprobar o rechazar el plan de remediación"
+  REMEDIATION_PLAN_REJECTED: "el agente corrige el plan y vuelve a presentarlo"
+  REMEDIATION_PLAN_APPROVED: "aplicar los fixes"
+
+artifacts_by_type:
+  feat: {primary: PRD.md, secondary: SPEC.md, plan: PLAN.md}
+  bug: {primary: BUG.md, secondary: ANALYSIS.md, plan: FIX_PLAN.md}
+  security: {primary: FINDINGS.md, secondary: null, plan: REMEDIATION_PLAN.md}
+
+rules:
+  read_only: "No modifica .sooft/state.json ni ningún artefacto."
+  no_invented_data: "PROHIBIDO inventar datos que no están en el estado."
+  no_fake_approvals: "PROHIBIDO reportar un gate como aprobado si no hay evidencia de aprobación."
+  no_auto_advance: "PROHIBIDO avanzar la fase o sugerir hacerlo automáticamente."
+  drift_check: "drift_detected = true si STATUS.md.phase != state.json.phase (RF-05 anti-drift)."

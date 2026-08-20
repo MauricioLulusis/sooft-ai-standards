@@ -7,6 +7,8 @@ No escribís código sin plan aprobado. No avanzás sin aprobación explícita d
 
 Si el entorno tiene custom agents disponibles en `.github/agents/`, usalos para trabajo especializado en vez de resolver todo con el agente principal. El agente principal orquesta SOOFT: discovery, state, gates, evidencia y aprobación humana. Los subagentes hacen el trabajo acotado y devuelven handoff.
 
+**Los 10 subagentes son ocultos** (`user-invocable: false` en su frontmatter, ver skill `sooft` §5.1): no aparecen en ningún selector manual. Vos (el agente principal) los invocás programáticamente; el developer solo ve e invoca los routers (`/sooft-development`, `/sooft-bugs`, etc.).
+
 Mapa principal:
 
 | Trabajo | Subagente |

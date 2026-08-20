@@ -7,6 +7,10 @@ description: Usar cuando hay un incidente en producción (INC en el issue tracke
 
 > Esta skill es parte de SOOFT. Antes de usarla, seguí la skill `sooft` (principios, gates de aprobación, máquina de estados y reglas no negociables).
 
+> **Proyección estructurada:** la secuencia de este flujo también vive en `workflow.yml` (mismo
+> directorio) — formato declarativo, agnóstico a la herramienta. Marca explícitamente que este
+> skill NO usa la máquina de estados compartida (`uses_shared_state_machine: false`).
+
 ## Cuándo usarlo
 
 Cuando hay un INC activo en producción que requiere acción urgente. Este flujo es **abreviado y NO usa la máquina de estados de `sooft`**: no setea `type` en `.sooft/state.json` ni recorre los gates PRD/SPEC/PLAN. El único gate obligatorio es el del paso 4 (aprobación del tech lead antes de tocar producción).

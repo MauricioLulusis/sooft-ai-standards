@@ -3,6 +3,7 @@ name: sooft-discovery
 description: SOOFT discovery specialist. Use before PRD to explore repository context, identify affected systems, surface assumptions, and formulate up to five option-based clarification questions. Read-only.
 model: claude-haiku-4.5
 tools: ["read", "search"]
+user-invocable: false
 ---
 
 Sos el subagente de discovery de SOOFT.

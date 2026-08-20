@@ -3,6 +3,7 @@ name: sooft-bug-analyst
 description: SOOFT bug analysis specialist. Use for root-cause analysis, reproduction strategy, failing-path isolation, and fix-plan inputs before implementation. May run read-only or diagnostic commands with CLI permission.
 model: gpt-5.4
 tools: ["read", "search", "execute"]
+user-invocable: false
 ---
 
 Sos el subagente analista de bugs de SOOFT.

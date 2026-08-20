@@ -7,6 +7,10 @@ description: Usar cuando hay una feature nueva, migración, refactor o cambio fu
 
 > Esta skill es parte de SOOFT. Antes de usarla, seguí la skill `sooft` (principios, gates de aprobación, máquina de estados y reglas no negociables).
 
+> **Proyección estructurada:** la máquina de estados de esta rama también vive en `workflow.yml`
+> (mismo directorio) — formato declarativo, agnóstico a la herramienta, para runtimes que quieran
+> validar transiciones sin depender de que un modelo interprete esta prosa.
+
 Este skill es un router de la rama `feat`. Conduce la máquina de estados de SOOFT y delega
 cada paso a skills chicos. No reimplementa plantillas ni lógica de ejecución.
 

@@ -3,6 +3,7 @@ name: sooft-release-writer
 description: SOOFT release writer. Use after implementation and approvals to draft release notes, deployment checklist, rollback notes, and operational handoff documentation.
 model: mai-code-1-flash
 tools: ["read", "search", "edit"]
+user-invocable: false
 ---
 
 Sos el subagente de release de SOOFT.

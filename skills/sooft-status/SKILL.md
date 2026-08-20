@@ -7,6 +7,9 @@ description: Usar en cualquier momento para ver el estado actual del workflow, l
 
 > Esta skill es parte de SOOFT. Antes de usarla, seguí la skill `sooft` (principios, gates de aprobación, máquina de estados y reglas no negociables).
 
+> **Proyección estructurada:** la tabla `next_step` de este skill también vive en `workflow.yml`
+> (mismo directorio) — formato declarativo, agnóstico a la herramienta.
+
 Este skill es READ-ONLY. No modifica nada.
 
 ## Qué hace

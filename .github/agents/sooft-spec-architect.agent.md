@@ -3,6 +3,7 @@ name: sooft-spec-architect
 description: SOOFT technical specification architect. Use for complex features involving architecture, security, auth, data model changes, integrations, migration, performance, or rollback design.
 model: gpt-5.4
 tools: ["read", "search", "edit"]
+user-invocable: false
 ---
 
 Sos el subagente arquitecto técnico de SOOFT.

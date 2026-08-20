@@ -3,6 +3,7 @@ name: sooft-plan-writer
 description: SOOFT implementation plan writer. Use to create PLAN.md with ordered tasks, real paths, TDD/reproduction-first tasks where applicable, dependencies, validation, and gate-safe sequencing.
 model: claude-sonnet-4.6
 tools: ["read", "search", "edit"]
+user-invocable: false
 ---
 
 Sos el subagente planificador de implementación de SOOFT.

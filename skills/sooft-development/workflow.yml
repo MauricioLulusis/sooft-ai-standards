@@ -1,0 +1,70 @@
+# skills/sooft-development/workflow.yml — rama FEATURE (type: feat).
+# Converge en skills/sooft/workflow.yml#IMPLEMENTING. Ver ese archivo para el tronco común
+# (VALIDATING → CODE_REVIEW_PENDING → REVIEW_DONE → PR_OPEN → DONE) y las reglas transversales.
+
+skill: sooft-development
+kind: router
+type: feat
+
+entry:
+  from: IDLE
+  on: discovery_complete
+  to: ANALYZED
+
+states:
+  ANALYZED: {}
+
+  PRD_PENDING:
+    gate:
+      artifact: docs/feats/{slug}/PRD.md
+      approver: developer
+      phrase: "PRD listo en {path}. Revisá antes de que continúe."
+
+  PRD_REJECTED:
+    returns_to: PRD_PENDING
+
+  PRD_APPROVED: {}
+
+  SPEC_PENDING:
+    optional: true
+    condition: "cambio complejo — criterio en assets/technical-spec.md"
+    gate:
+      artifact: docs/feats/{slug}/SPEC.md
+      approver: developer|tech-lead
+      phrase: "SPEC listo en {path}. Revisá antes de que continúe."
+
+  SPEC_REJECTED:
+    returns_to: SPEC_PENDING
+
+  SPEC_APPROVED: {}
+
+  PLAN_PENDING:
+    gate:
+      artifact: docs/feats/{slug}/PLAN.md
+      approver: developer|tech-lead
+      phrase: "PLAN listo en {path}. Revisá antes de que continúe."
+
+  PLAN_REJECTED:
+    returns_to: PLAN_PENDING
+
+  PLAN_APPROVED: {}
+
+transitions:
+  - {from: ANALYZED, to: PRD_PENDING, on: prd_drafted}
+  - {from: PRD_PENDING, to: PRD_REJECTED, on: developer_rejects}
+  - {from: PRD_REJECTED, to: PRD_PENDING, on: prd_redrafted}
+  - {from: PRD_PENDING, to: PRD_APPROVED, on: developer_approves}
+  - {from: PRD_APPROVED, to: SPEC_PENDING, on: spec_required}
+  - {from: PRD_APPROVED, to: PLAN_PENDING, on: spec_not_required}
+  - {from: SPEC_PENDING, to: SPEC_REJECTED, on: developer_rejects}
+  - {from: SPEC_REJECTED, to: SPEC_PENDING, on: spec_redrafted}
+  - {from: SPEC_PENDING, to: SPEC_APPROVED, on: developer_approves}
+  - {from: SPEC_APPROVED, to: PLAN_PENDING, on: plan_drafted}
+  - {from: PLAN_PENDING, to: PLAN_REJECTED, on: developer_rejects}
+  - {from: PLAN_REJECTED, to: PLAN_PENDING, on: plan_redrafted}
+  - {from: PLAN_PENDING, to: PLAN_APPROVED, on: developer_approves}
+
+converges_to: "skills/sooft/workflow.yml#IMPLEMENTING"
+converge_event: plan_approved
+
+artifacts_root: docs/feats/{slug}/

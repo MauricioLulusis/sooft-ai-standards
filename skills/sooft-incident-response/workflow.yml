@@ -1,0 +1,50 @@
+# skills/sooft-incident-response/workflow.yml — flujo abreviado de hotfix. NO usa la máquina de
+# estados de sooft/workflow.yml: no setea `type` en .sooft/state.json ni recorre PRD/SPEC/PLAN.
+# Se declara como secuencia propia, separada del vocabulario de fases del resto de SOOFT.
+
+skill: sooft-incident-response
+kind: standalone
+uses_shared_state_machine: false
+
+severities:
+  P1: {label: Crítico, desc: "servicio caído/inaccesible, pérdida de datos, impacto en todos los usuarios"}
+  P2: {label: Alto, desc: "funcionalidad crítica degradada, workaround posible, impacto en muchos usuarios"}
+  P3: {label: Medio, desc: "funcionalidad no crítica afectada, workaround simple, impacto acotado"}
+
+sequence:
+  - step: intake
+    collects: [síntoma, impacto, desde_cuándo, ticket_INC, severidad_preliminar]
+  - step: analisis_inmediato
+    inputs: [logs, trazas_de_error, métricas_y_alertas, cambios_recientes_en_produccion, componentes_afectados]
+    output: hipotesis_causa_raiz_con_confianza
+  - step: decision_accion
+    options: [workaround, hotfix]
+    rule: "Para P1: preferir workaround si existe. Hotfix solo si no hay otra opción."
+  - step: gate_aprobacion
+    gate:
+      approver: tech-lead
+      mandatory: true
+      never_skipped: true   # ni siquiera en P1
+      requires: [diagnostico_preliminar, accion_elegida, riesgo_estimado, plan_de_rollback]
+      documented_in: "Slack, Teams o comentario en el INC"
+  - step: fix_minimo
+    branch:
+      workaround: "documentar pasos exactos y ejecutar con acompañamiento"
+      hotfix: "rama hot-fix/{slug} desde producción, cambio mínimo, PR exprés con al menos un reviewer, merge a producción"
+    verify: [smoke_test, métricas, confirmación_del_usuario_reportante]
+  - step: post_mortem
+    required_for: [P1, P2]
+    within_hours: 48
+    includes: [timeline, causa_raiz_confirmada, brechas_de_deteccion, acciones_preventivas_con_responsables_y_fechas]
+
+artifacts_root: "docs/incidents/{ticket}/"
+artifacts:
+  INCIDENT.md: "diagnóstico, decisión, fix aplicado"
+  POSTMORTEM.md: "solo P1/P2, después de la resolución"
+
+branch_naming: "hot-fix/{slug-del-incidente}"
+merge_path: "directo a la rama de producción, luego cherry-pick o merge a main"
+
+rules:
+  gate_never_skipped: "El gate de aprobación del tech lead no se saltea, ni siquiera en P1."
+  postmortem_mandatory_p1_p2: "Post-mortem obligatorio dentro de 48h para P1/P2."

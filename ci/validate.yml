@@ -50,15 +50,15 @@ jobs:
           root = pathlib.Path("evals")
           required_root = ["README.md", "schema.md", "rubric.md", "migration.md"]
           missing = [str(root / f) for f in required_root if not (root / f).is_file()]
-          allowed_categories = {"process-safety", "adversarial", "bug", "security", "init", "status", "state", "subagents"}
+          allowed_categories = {"process-safety", "adversarial", "bug", "security", "init", "status", "state", "subagents", "routing"}
           allowed_skills = {"development", "bugs", "security-remediation", "init", "status", "review", "next", "sooft"}
           allowed_check_types = {"deterministic", "transcript", "manual"}
           allowed_severities = {"hard_failure", "scored"}
           allowed_evidence = {"filesystem", "git_diff", "artifacts", "final_message", "transcript", "command_log", "stdout_stderr", "sooft_state"}
 
           tasks = sorted((root / "tasks").iterdir()) if (root / "tasks").is_dir() else []
-          if len([p for p in tasks if p.is_dir()]) != 13:
-              missing.append("evals/tasks must contain exactly 13 task directories")
+          if len([p for p in tasks if p.is_dir()]) != 14:
+              missing.append("evals/tasks must contain exactly 14 task directories")
 
           required_task = ["task.toml", "instruction.md", "fixture/README.md", "verification.md", "expected/README.md"]
           all_checks = {}

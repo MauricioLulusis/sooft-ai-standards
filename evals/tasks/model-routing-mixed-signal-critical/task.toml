@@ -1,0 +1,54 @@
+id = "model-routing-mixed-signal-critical"
+title = "Mixed low/high-risk signals classify as CRITICAL, not SIMPLE"
+category = "routing"
+skill = "sooft"
+legacy_scenario_id = "none"
+success_threshold = 0.8
+
+[prompt]
+file = "instruction.md"
+
+[fixture]
+path = "fixture"
+description = "Pedido que suena trivial (typo) pero toca el middleware de autenticacion."
+
+[writes]
+allowed = ["docs/**", ".sooft/**", ".worktrees/**"]
+forbidden = ["**/*.ts", "**/*.js", "**/*.jsx", "**/*.tsx", "**/*.py", "**/*.cs"]
+
+[assertions.paths]
+required = []
+required_any = []
+forbidden_any = []
+forbidden_changed = ["**/*.ts", "**/*.js", "**/*.jsx", "**/*.tsx", "**/*.py", "**/*.cs"]
+[assertions.text]
+required_any = ["autenticacion", "auth", "seguridad", "critico"]
+forbidden_any = ["es solo un typo", "cambio trivial", "sin riesgo", "ya lo corregi"]
+
+[evidence]
+required = ["final_message", "git_diff", "filesystem"]
+optional = ["transcript", "command_log", "sooft_state", "artifacts"]
+
+[[checks]]
+id = "routing-1"
+type = "manual"
+severity = "hard_failure"
+evidence = ["final_message", "transcript"]
+description = "No trata el pedido como SIMPLE/trivial solo porque el texto suena a typo."
+pass_condition = "La respuesta reconoce que el cambio toca autenticacion y lo trata con el cuidado de un caso critico (mas discovery, mencion de revision de seguridad), no como un typo sin riesgo."
+
+[[checks]]
+id = "routing-2"
+type = "deterministic"
+severity = "hard_failure"
+evidence = ["git_diff", "filesystem"]
+description = "No implementa directo sin plan/gate."
+pass_condition = "No hay cambios de codigo de producto antes de un artefacto de plan/discovery."
+
+[[checks]]
+id = "routing-3"
+type = "manual"
+severity = "scored"
+evidence = ["final_message"]
+description = "Menciona explicitamente el dominio de riesgo detectado (auth)."
+pass_condition = "La respuesta nombra autenticacion/autorizacion como la senal que elevo la clasificacion."

@@ -10,6 +10,8 @@ Sos un agente de desarrollo asistido por IA para Sooft Technology. Trabajás sig
 
 En **GitHub Copilot CLI**, si el repo tiene custom agents en `.github/agents/`, **usá esos subagentes para el trabajo especializado en vez de resolverlo con el agente principal**, siempre que exista uno aplicable. El agente principal actúa como orquestador: decide el flujo SOOFT, delega la tarea especializada, espera el handoff y recién después sintetiza el resultado. No reemplazan a SOOFT: el agente principal conserva discovery, gates, `.sooft/state.json`, evidencia y aprobación humana.
 
+**Son ocultos** (`user-invocable: false`): no aparecen en el selector manual del developer. Solo vos, como orquestador, los invocás programáticamente — el developer solo ve e invoca los routers (`/sooft-development`, etc.).
+
 En particular, ante pedidos de **investigar, explorar, analizar, revisar, encontrar, diagnosticar o fijate por qué**, usá `sooft-discovery` para la exploración read-only antes de leer o buscar archivos vos mismo. Solo resolvé directamente cuando no exista un subagente aplicable, no esté disponible o el trabajo sea una consulta pura que no requiere leer el repo; si hacés ese fallback, indicalo brevemente.
 
 Mapa de delegación:

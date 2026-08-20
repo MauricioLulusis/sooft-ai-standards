@@ -1,0 +1,55 @@
+# skills/sooft-bugs/workflow.yml — rama BUG (type: bug).
+# Converge en skills/sooft/workflow.yml#IMPLEMENTING.
+
+skill: sooft-bugs
+kind: router
+type: bug
+
+entry:
+  from: IDLE
+  on: discovery_complete
+  to: REQUIREMENT_LOADED
+
+states:
+  REQUIREMENT_LOADED: {}
+
+  BUG_DOCUMENTED:
+    artifact: docs/bugs/{slug}/BUG.md
+    driver: assets/bug-analysis.md
+
+  BUG_ANALYZED:
+    artifact: docs/bugs/{slug}/ANALYSIS.md
+    driver: assets/bug-reproduction.md
+
+  BUG_REPRODUCED:
+    description: Test de reproducción escrito y en rojo (falla) antes del fix.
+    driver: assets/fix-plan.md
+
+  FIX_PLAN_PENDING:
+    gate:
+      artifact: docs/bugs/{slug}/FIX_PLAN.md
+      approver: developer
+      phrase: "FIX_PLAN listo en {path}. Revisá antes de que continúe."
+
+  FIX_PLAN_REJECTED:
+    returns_to: FIX_PLAN_PENDING
+
+  FIX_PLAN_APPROVED: {}
+
+transitions:
+  - {from: REQUIREMENT_LOADED, to: BUG_DOCUMENTED, on: bug_documented}
+  - {from: BUG_DOCUMENTED, to: BUG_ANALYZED, on: analysis_complete}
+  - {from: BUG_ANALYZED, to: BUG_REPRODUCED, on: repro_test_red}
+  - {from: BUG_REPRODUCED, to: FIX_PLAN_PENDING, on: fix_plan_drafted}
+  - {from: FIX_PLAN_PENDING, to: FIX_PLAN_REJECTED, on: developer_rejects}
+  - {from: FIX_PLAN_REJECTED, to: FIX_PLAN_PENDING, on: fix_plan_redrafted}
+  - {from: FIX_PLAN_PENDING, to: FIX_PLAN_APPROVED, on: developer_approves}
+
+rules:
+  no_code_before_fix_plan_approved: "PROHIBIDO escribir código de fix hasta phase == FIX_PLAN_APPROVED o IMPLEMENTING."
+  reproduction_before_fix: "El test de reproducción (rojo) precede siempre al FIX_PLAN."
+
+converges_to: "skills/sooft/workflow.yml#IMPLEMENTING"
+converge_event: fix_plan_approved
+
+artifacts_root: docs/bugs/{slug}/

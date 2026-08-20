@@ -1,0 +1,119 @@
+# skills/sooft/workflow.yml — tronco común de la máquina de estados (agnóstico a herramienta).
+#
+# SKILL.md §4 sigue siendo la fuente de verdad narrativa para el LLM. Este archivo es la
+# proyección estructurada de esa misma máquina: cualquier runtime (no solo un LLM leyendo
+# Markdown) puede validar una transición, dibujar el diagrama o auditar `state.json` contra esto.
+# Los 4 routers (sooft-development/-bugs/-security-remediation/-migrations) definen su propia
+# rama en su propio workflow.yml y convergen acá (`converges_to`).
+#
+# Contrato: mismos nombres de estado que `state.json.phase` y que SKILL.md §4. Ningún estado o
+# transición fuera de este archivo (+ el de la rama activa) es válido — un phase no enumerado
+# es HALT, no un estado a inventar.
+
+skill: sooft
+kind: constitution
+
+# Estados que cualquier rama puede alcanzar antes de converger en el tronco.
+entry_states: [IMPLEMENTING, MIGRATING]
+
+states:
+  IMPLEMENTING:
+    description: Escritura de código según el PLAN aprobado de la rama activa.
+
+  MIGRATING:
+    description: Alias de IMPLEMENTING para la rama migration (build-and-fix loop del subagente especialista).
+    alias_of: IMPLEMENTING
+
+  VALIDATING:
+    description: Tests, análisis estático/SAST, cobertura.
+    on_exit:
+      - consolidate_self_review   # .sooft/self-review-scratchpad.md -> docs/{tipo}/{slug}/SELF-REVIEW.md
+    blocking_input:
+      artifact: docs/{tipo}/{slug}/SELF-REVIEW.md
+      template: assets/self-review-template.md
+      rules: internal/sooft-validation.md
+
+  VALIDATING_PARITY:
+    description: Alias de VALIDATING para la rama migration (paridad funcional en vez de tests nuevos).
+    alias_of: VALIDATING
+
+  SECURITY_FINDINGS:
+    description: SAST con hallazgos críticos/altos — remediación obligatoria antes de continuar.
+    mandatory: true
+    trigger: sast_critical_or_high_findings
+
+  CODE_REVIEW_PENDING:
+    description: Gate 4 — revisión humana del código IA-generated.
+    mandatory: true
+    gate:
+      approver: developer|tech-lead
+      phrase: >-
+        El siguiente código fue generado por IA y está marcado como [IA-generated].
+        Revisalo y aprobalo antes de que arme el PR.
+      blocking_input:
+        artifact: docs/{tipo}/{slug}/SELF-REVIEW.md
+        note: sin SELF-REVIEW.md completo y consistente, este gate no se abre.
+
+  REVIEW_DONE: {}
+
+  PR_OPEN:
+    gate:
+      approver: developer
+      phrase: "Código aprobado. ¿Pusheo la rama <rama> y abro el PR, o lo hacés vos?"
+      requires_explicit_confirmation: true
+      note: PROHIBIDO git push o pull_request_create sin esta confirmación explícita.
+
+  DONE:
+    terminal: true
+
+  BLOCKED:
+    transversal: true
+    persists: previous_phase
+
+  CANCELLED:
+    terminal: true
+
+  MIGRATION_BLOCKED:
+    transversal: true
+    persists: previous_phase
+    trigger: >-
+      5 intentos de build o arranque fallidos, conflicto de Git que no compila,
+      o hallazgo que requiere intervención humana.
+    scope: migration
+
+transitions:
+  - {from: IMPLEMENTING, to: VALIDATING, on: implementation_complete}
+  - {from: MIGRATING, to: VALIDATING_PARITY, on: migration_complete}
+  - {from: VALIDATING, to: SECURITY_FINDINGS, on: sast_critical_or_high}
+  - {from: SECURITY_FINDINGS, to: VALIDATING, on: remediated}
+  - {from: VALIDATING, to: CODE_REVIEW_PENDING, on: self_review_consolidated}
+  - {from: VALIDATING_PARITY, to: CODE_REVIEW_PENDING, on: self_review_consolidated}
+  - {from: CODE_REVIEW_PENDING, to: REVIEW_DONE, on: human_review_approved}
+  - {from: REVIEW_DONE, to: PR_OPEN, on: developer_confirms_push}
+  - {from: PR_OPEN, to: DONE, on: pr_opened}
+  - {from: "*", to: BLOCKED, on: blocking_issue_detected}
+  - {from: BLOCKED, to: previous_phase, on: developer_unblocks}
+  - {from: MIGRATING, to: MIGRATION_BLOCKED, on: build_fix_loop_exhausted}
+  - {from: MIGRATION_BLOCKED, to: previous_phase, on: developer_unblocks}
+
+rules:
+  no_gate_skipping: "No se llega a IMPLEMENTING/MIGRATING sin *_APPROVED de la rama activa."
+  rejected_always_returns_to_pending: "Todo *_REJECTED vuelve al *_PENDING correspondiente; nunca termina el pipeline."
+  sast_findings_force_security_findings: "VALIDATING con hallazgos críticos/altos ⇒ SECURITY_FINDINGS obligatorio."
+  code_review_mandatory_before_pr: "CODE_REVIEW_PENDING es obligatorio antes de PR_OPEN, aunque el plan esté aprobado."
+  blocked_persists_previous_phase: "BLOCKED / MIGRATION_BLOCKED guardan previous_phase y solo transicionan de vuelta a ese estado."
+  migration_build_fix_loop_max_attempts: 5
+  pr_open_requires_explicit_developer_confirmation: "REVIEW_DONE -> PR_OPEN no es automático. PROHIBIDO push/PR por iniciativa propia."
+
+state_file:
+  path: .sooft/state.json
+  schema:
+    phase: string        # uno de los estados de este archivo + el de la rama activa
+    type: "feat|bug|security|migration"
+    ticket: "string|null"
+    owner: string
+    created_at: string   # ISO-8601
+    last_step: string
+    next_step: "string|null"
+    blocked_reason: "string|null"
+    previous_phase: "string|null"

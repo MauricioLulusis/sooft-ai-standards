@@ -8,6 +8,9 @@ description: "Usar cuando hay que migrar un proyecto de una versión a otra (ej.
 > Esta skill es parte de SOOFT. Antes de usarla, seguir la skill `sooft` (constitución):
 > principios, gates de aprobación, máquina de estados y reglas no negociables. Las políticas
 > completas de **seguridad** y **testing** de Sooft viven en `skills/sooft/assets/policies/`
+
+> **Proyección estructurada:** la máquina de estados de esta rama también vive en `workflow.yml`
+> (mismo directorio) — formato declarativo, agnóstico a la herramienta.
 > (`security-guidelines.md`, `testing-guidelines.md`) y **mandan** sobre cualquier detalle de este documento.
 
 Router de la rama `migration`. El **discovery con el dev es el driver**: el dev define de qué

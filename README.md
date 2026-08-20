@@ -129,6 +129,8 @@ sooft-ai-standards/
 ├── .vscode/                          → settings + mcp.json (server el issue tracker) para VS Code
 ├── .mcp.json                         → server MCP del issue tracker para el CLI de Copilot
 ├── skills/                           → la metodología SOOFT como skills
+│   │                                    (cada skill trae SKILL.md + workflow.yml — máquina de
+│   │                                    estados declarativa, agnóstica a la herramienta)
 │   ├── sooft/                         → constitución (SKILL.md) + assets
 │   │   └── assets/
 │   │       ├── prompts/             → prompt files (/sooft, /sooft-development, …)

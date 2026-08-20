@@ -1,0 +1,46 @@
+# skills/sooft-checkpoint/workflow.yml — utilidad de compaction manual. No dirige ninguna rama:
+# solo actualiza STATUS.md + snapshot rotativo, sin tocar `phase`.
+
+skill: sooft-checkpoint
+kind: utility
+mutates_state: true
+mutates_phase: false
+
+precondition:
+  reads: .sooft/state.json
+  requires: "phase != IDLE"
+  on_fail: "No hay workflow activo. /sooft-checkpoint requiere un workflow en curso."
+
+steps:
+  - id: update_status_md
+    target: "docs/{tipo}/{slug}/STATUS.md"
+    template: skills/sooft/assets/status-template.md
+    invariant: "STATUS.md.phase == state.json.phase (RF-05 anti-drift, HALT si diverge)"
+    max_lines: 200  # RNF-02, compactar en vez de truncar
+  - id: write_rotating_snapshot
+    target: ".sooft/status/YYYY-MM-DDTHH-MM.md"
+    retention: {policy: fifo, max: 10, excludes: ".sooft/status/gates/"}
+  - id: append_evidence
+    target: .sooft/evidence.md
+    entry: "## <YYYY-MM-DD HH:MM> · Checkpoint manual"
+  - id: confirm_to_developer
+    output: "Checkpoint registrado. STATUS.md actualizado + snapshot en .sooft/status/<file>. Snapshots retenidos: N/10."
+
+mutates_only:
+  - "docs/{tipo}/{slug}/STATUS.md"
+  - ".sooft/status/**"
+  - .sooft/evidence.md
+  - "state.json.last_step (= checkpoint; next_step sin cambios)"
+
+rules:
+  never_changes_phase: "Idempotente respecto a la máquina de estados — NO cambia phase en state.json."
+  never_transitions: "Si el developer quiere transicionar, usa el flujo normal del driver correspondiente."
+  no_forbidden_content: "RF-08 de status-template.md: sin PII, secretos, transcripts crudos, stack traces."
+  gates_snapshots_immutable: "NO tocar .sooft/status/gates/ (snapshots permanentes de gates aprobados)."
+  fifo_retention_is_transparent: "NO forzar el reset del contador FIFO."
+
+see_also:
+  - skills/sooft/assets/status-template.md
+  - skills/sooft/internal/sooft-implement-task.md
+  - skills/sooft-status/workflow.yml
+  - skills/sooft/internal/sooft-evidence.md

@@ -1,0 +1,53 @@
+# skills/sooft-migrations/workflow.yml — rama MIGRATION (type: migration).
+# Única rama sin PRD/SPEC: flujo lean guiado por el discovery. Converge en
+# skills/sooft/workflow.yml#MIGRATING (alias de IMPLEMENTING) y usa VALIDATING_PARITY en vez de
+# VALIDATING en el tronco común.
+
+skill: sooft-migrations
+kind: router
+type: migration
+
+entry:
+  from: IDLE
+  on: discovery_complete
+  to: MIGRATION_REQUIREMENT_LOADED
+
+states:
+  MIGRATION_REQUIREMENT_LOADED:
+    description: Discovery fija origen y destino (tecnología y versión de cada lado) con el developer.
+
+  ARCHEOLOGY_DONE:
+    description: Análisis del proyecto — reemplaza al PRD en esta rama (no hay PRD ni SPEC).
+
+  MIGRATION_PLAN_PENDING:
+    gate:
+      artifact: docs/migrations/{slug}/PLAN.md
+      approver: developer
+      phrase: "PLAN listo en {path}. Revisá antes de que continúe."
+      note: único gate de planificación de esta rama.
+
+  MIGRATION_PLAN_REJECTED:
+    returns_to: MIGRATION_PLAN_PENDING
+
+  MIGRATION_PLAN_APPROVED: {}
+
+classes:
+  A: "Upgrade de versión mismo-lenguaje — motor AST + build-and-fix loop (subagente especialista por stack)."
+  B: "Port entre tecnologías — traducción guiada, sin motor AST (agents/language-migration-agent.md)."
+
+transitions:
+  - {from: MIGRATION_REQUIREMENT_LOADED, to: ARCHEOLOGY_DONE, on: project_analyzed}
+  - {from: ARCHEOLOGY_DONE, to: MIGRATION_PLAN_PENDING, on: plan_drafted}
+  - {from: MIGRATION_PLAN_PENDING, to: MIGRATION_PLAN_REJECTED, on: developer_rejects}
+  - {from: MIGRATION_PLAN_REJECTED, to: MIGRATION_PLAN_PENDING, on: plan_redrafted}
+  - {from: MIGRATION_PLAN_PENDING, to: MIGRATION_PLAN_APPROVED, on: developer_approves}
+
+rules:
+  no_code_before_plan_approved: "PROHIBIDO modificar código del proyecto antes de MIGRATION_PLAN_APPROVED."
+  no_prd_no_spec: "Esta rama no usa PRD ni SPEC — el PLAN es el único gate de planificación."
+  build_fix_loop_max_attempts: 5
+
+converges_to: "skills/sooft/workflow.yml#MIGRATING"
+converge_event: migration_plan_approved
+
+artifacts_root: docs/migrations/{slug}/

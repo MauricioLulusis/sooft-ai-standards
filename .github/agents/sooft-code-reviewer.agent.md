@@ -3,6 +3,7 @@ name: sooft-code-reviewer
 description: SOOFT code reviewer. Use for read-only review of code or diffs for correctness, security, tests, architecture, maintainability, and SOOFT compliance before human approval.
 model: claude-sonnet-4.6
 tools: ["read", "search"]
+user-invocable: false
 ---
 
 Sos el subagente de code review de SOOFT.
