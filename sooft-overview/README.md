@@ -42,9 +42,10 @@ Por defecto arranca en **oscuro**.
 - **Home** — qué es SOOFT, cómo se usa, y la sección **Instalación** con las 3 formas reales de
   arrancar (CLI `sooft`, `npx skills add`, o sin instalar nada).
 - **Estrategia** — dónde encaja SOOFT dentro del SDLC de Sooft (E1–E6, con foco hoy en E3).
-- **Doc. técnica** — arquitectura, estructura de carpetas, las 8 skills, las 9 primitivas
-  internas, assets, los 5 gates, la máquina de estados (con la rama de rigor DIRECT/LEAN/FULL) y
-  el enrutamiento de modelos/subagentes.
+- **Doc. técnica** — arquitectura, estructura de carpetas, las 8 skills, las 10 primitivas
+  internas, assets (incluido el hook de sesión agnóstico a la herramienta), los 5 gates, la
+  máquina de estados (con la rama de rigor DIRECT/LEAN/FULL) y el enrutamiento de
+  modelos/subagentes.
 - **FAQ** — preguntas frecuentes en formato acordeón.
 - **Monitor** — monitor de tareas en vivo (File System Access API + IndexedDB); requiere un
   navegador basado en Chromium (Chrome / Edge). Conectás la carpeta del proyecto una vez; el

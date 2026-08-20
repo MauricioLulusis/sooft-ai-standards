@@ -1090,13 +1090,13 @@ flowchart TD
 ├── <span class="file">README · SECURITY · CONTRIBUTING · GOVERNANCE · CHANGELOG</span>
 ├── <span class="dir">.github/</span>
 │   ├── <span class="file">copilot-instructions.md</span>  <span class="cmt"># reglas always-on (GUI + CLI)</span>
-│   ├── <span class="dir">agents/</span>              <span class="cmt"># 10 subagentes .agent.md, user-invocable: false</span>
+│   ├── <span class="dir">agents/</span>              <span class="cmt"># 10 subagentes .agent.md + MODELS.md, user-invocable: false</span>
 │   └── <span class="dir">prompts/</span>             <span class="cmt"># slash commands de VS Code</span>
 ├── <span class="dir">skills/</span>
 │   ├── <span class="dir hl">sooft/</span>                    <span class="cmt"># ⚙️ CONSTITUCIÓN — fuente de verdad</span>
 │   │   ├── <span class="file">SKILL.md</span> · <span class="file">workflow.yml</span>  <span class="cmt"># prosa + máquina de estados declarativa</span>
-│   │   ├── <span class="dir">internal/</span>            <span class="cmt"># 9 primitivas internas (no invocables)</span>
-│   │   └── <span class="dir">assets/</span>              <span class="cmt"># init, banner, templates, drivers, archetypes…</span>
+│   │   ├── <span class="dir">internal/</span>            <span class="cmt"># 10 primitivas internas (no invocables)</span>
+│   │   └── <span class="dir">assets/</span>              <span class="cmt"># init, banner, hooks/, templates, drivers, archetypes…</span>
 │   ├── <span class="dir hl">sooft-development/</span>        <span class="cmt"># router rama feat</span>
 │   ├── <span class="dir hl">sooft-bugs/</span>              <span class="cmt"># router rama bug</span>
 │   ├── <span class="dir hl">sooft-security-remediation/</span> <span class="cmt"># router rama security</span>
@@ -1184,6 +1184,7 @@ flowchart TD
             <table>
               <thead><tr><th>Recurso</th><th>Se carga cuando…</th></tr></thead>
               <tbody>
+                <tr><td><code>internal/sooft-bootstrap.md</code></td><td>primera activación de <code>sooft</code> en la sesión — instala el hook de sesión y los archivos que la herramienta necesita</td></tr>
                 <tr><td><code>internal/sooft-discovery.md</code></td><td>arranca cualquier flujo — discovery obligatorio antes de tocar nada</td></tr>
                 <tr><td><code>internal/sooft-implement-task.md</code></td><td>hay que ejecutar una tarea aprobada del plan</td></tr>
                 <tr><td><code>internal/sooft-validation.md</code></td><td>validación pre-PR (<code>/review</code>): linter + calidad + SAST</td></tr>
@@ -1207,8 +1208,8 @@ flowchart TD
           <div class="grid cols-2 reveal">
             <div class="asset-group">
               <h4><span class="dot"></span> Setup &amp; hooks</h4>
-              <p class="sub">Lo que <code>/sooft</code> deja en el proyecto destino la primera vez.</p>
-              <div class="chips"><span class="chip">init.md</span><span class="chip">banner.txt</span><span class="chip">sooft.json · sessionStart</span><span class="chip">copilot-instructions.md</span></div>
+              <p class="sub">Lo que <code>/sooft</code> deja en el proyecto destino la primera vez. El hook de sesión tiene una sola fuente de verdad (<code>hooks/session-start.yml</code>) y un adapter real por herramienta — nunca un formato inventado.</p>
+              <div class="chips"><span class="chip">init.md</span><span class="chip">banner.txt</span><span class="chip">hooks/session-start.yml</span><span class="chip">hooks/claude-settings-fragment.json</span><span class="chip">sooft.json · sessionStart</span><span class="chip">copilot-instructions.md</span></div>
             </div>
             <div class="asset-group">
               <h4><span class="dot"></span> Prompts · slash commands</h4>

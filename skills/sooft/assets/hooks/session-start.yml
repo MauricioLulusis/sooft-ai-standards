@@ -1,0 +1,68 @@
+# Spec canónica del hook `session_start`, agnóstica a la herramienta.
+# Fuente de verdad del CONTENIDO (banner + mensaje). Cada herramienta con mecanismo de
+# hooks nativo traduce esto a su propio formato — ver `adapters` abajo. Ninguna
+# herramienta es obligatoria: sin hook nativo, SOOFT sigue funcionando igual porque el
+# mismo mensaje ya vive en AGENTS.md / *-instructions.md (siempre activo, sin depender
+# de un evento determinista).
+
+event: session_start
+description: >
+  Se dispara al iniciar o resumir una sesión del agente en un proyecto SOOFT. Lo corre
+  el harness de la herramienta, NO el agente — costo cero de tokens de razonamiento.
+  Dos efectos: (1) muestra un banner visual, (2) inyecta un recordatorio de contexto que
+  obliga a cargar la skill `sooft` antes de tocar código.
+
+banner_file: ../banner.txt
+banner_fallback: "=== SOOFT — Sooft Engineering AI Rails ==="
+
+additional_context: >
+  Estás en un proyecto SOOFT. Antes de leer, analizar, buscar o escribir código, cargá y
+  seguí la skill sooft: discovery obligatorio y gates de aprobación. No escribas código
+  sin un plan aprobado. FORMATO: no narres tu razonamiento interno. No digas lo que vas
+  a hacer antes de hacerlo. Si necesitás mostrar progreso, una sola línea breve (ej:
+  Analizando...). Entregá el resultado directamente. El esfuerzo no cambia, solo el
+  texto visible.
+
+# Cómo se traduce este spec a cada herramienta. `status: implementado` = existe un
+# adapter real, versionado, probado. `status: pendiente_por_diseño` = a propósito NO
+# hay un archivo hardcodeado — inventar el formato de una herramienta sin verificarlo
+# violaría la regla de no-invención de esta skill (ver internal/sooft-bootstrap.md).
+adapters:
+  copilot:
+    status: implementado
+    formato: copilot-agent-hooks-json (bloques bash + powershell separados)
+    archivos:
+      - "~/.copilot/hooks/sooft.json (user-level, todas las sesiones de esa máquina)"
+      - ".github/hooks/sooft.json (repo-level, versionado con el proyecto)"
+    fuente: assets/sooft.json
+    nota: >
+      El banner_fallback y additional_context de assets/sooft.json deben ser
+      idénticos en sustancia a los de este spec. Si divergen, es un bug de
+      sincronización — no una variante intencional de contenido.
+
+  claude:
+    status: implementado
+    formato: claude-code-settings-json (hooks.SessionStart[].hooks[].command)
+    archivo: ".claude/settings.json"
+    fuente: assets/hooks/claude-settings-fragment.json
+    regla_de_merge: >
+      Es un único archivo JSON que puede tener contenido propio del developer.
+      MERGEAR el array de SessionStart dentro de la clave "hooks" existente —
+      PROHIBIDO sobreescribir el archivo entero o pisar hooks ya configurados
+      por el equipo.
+
+  cualquier_otra_herramienta:
+    status: pendiente_por_diseño
+    regla: >
+      Si el harness actual declara su propio mecanismo de hooks nativo (nombre de
+      evento, formato de payload), traducí este spec a ese formato SOLO después de
+      confirmar la sintaxis real de esa herramienta contra su propia documentación.
+      PROHIBIDO inventar el nombre del evento o la forma del payload si no está
+      confirmado. Si no se puede confirmar, NO instales nada: avisá al developer y
+      seguí sin hook nativo — degradación segura, nunca bloqueante.
+
+fallback_sin_hooks: >
+  Ningún hook es obligatorio para que SOOFT funcione: es un atajo determinista y
+  gratuito en tokens para el banner y el recordatorio. Sin él, la misma regla ya está
+  en las instrucciones always-on (AGENTS.md, copilot-instructions.md, etc.) y en la
+  skill `sooft` — la degradación es silenciosa y segura, nunca un bloqueo.

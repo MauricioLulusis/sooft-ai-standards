@@ -1,0 +1,16 @@
+{
+  "_comment": "Adapter de assets/hooks/session-start.yml para Claude Code. MERGEAR el array de SessionStart dentro de la clave \"hooks\" de .claude/settings.json existente — nunca sobreescribir el archivo entero.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"process.stderr.write('=== SOOFT — Sooft Engineering AI Rails ===\\n');process.stdout.write(JSON.stringify({hookSpecificOutput:{hookEventName:'SessionStart',additionalContext:'Estás en un proyecto SOOFT. Antes de leer, analizar, buscar o escribir código, cargá y seguí la skill sooft: discovery obligatorio y gates de aprobación. No escribas código sin un plan aprobado. FORMATO: no narres tu razonamiento interno. No digas lo que vas a hacer antes de hacerlo. Si necesitás mostrar progreso, una sola línea breve (ej: Analizando...). Entregá el resultado directamente. El esfuerzo no cambia, solo el texto visible.'}}));\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

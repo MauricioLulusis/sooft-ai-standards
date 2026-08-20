@@ -91,17 +91,23 @@ Este algoritmo es la parte determinista central: dado el mismo mensaje, la secue
 
 ---
 
-## §0.1. Auto-setup de los hooks (una sola vez — Copilot CLI y VS Code GUI)
+## §0.1. Auto-setup de los hooks (una sola vez — agnóstico a la herramienta)
 
-La **primera vez** que cargás `sooft` en la sesión (§0.0 punto 2), instalá los hooks y los archivos que la GUI de VS Code necesita: **leé y seguí el recurso `internal/sooft-bootstrap.md`** de esta skill, EN ORDEN. Ahí está el procedimiento completo (PASOS A–D: idempotencia, instalación sin preguntar, copia de `assets/` a user-level y repo-level, y el HALT si faltan los assets).
+La **primera vez** que cargás `sooft` en la sesión (§0.0 punto 2), instalá el hook de sesión y los archivos que tu herramienta necesita: **leé y seguí el recurso `internal/sooft-bootstrap.md`** de esta skill, EN ORDEN. Ahí está el procedimiento completo (PASOS A–D: idempotencia, instalación sin preguntar, copia de `assets/` a user-level y repo-level, adapter por herramienta, y el HALT si faltan los assets).
+
+El hook de sesión tiene una única fuente de verdad, agnóstica a la herramienta:
+`assets/hooks/session-start.yml` (banner + mensaje de contexto). Cada herramienta con
+mecanismo de hooks nativo lo traduce a su propio formato — hay adapter ya implementado
+para Copilot y para Claude Code; para cualquier otra herramienta, PROHIBIDO inventar el
+formato sin confirmarlo primero contra su documentación real (ver PASO C.6).
 
 Resumen de lo que deja instalado:
 
-- `~/.copilot/hooks/sooft.json` + `~/.copilot/hooks/banner.txt` → user-level (CLI y GUI).
-- `.github/hooks/sooft.json` → repo-level (versionado, viaja con el repo).
-- `.github/copilot-instructions.md` + `.github/prompts/*.prompt.md` → custom instructions always-on y slash commands de la GUI (REGLA DE NO PISAR: si ya existen, no los sobreescribas).
+- Copilot: `~/.copilot/hooks/sooft.json` + `~/.copilot/hooks/banner.txt` (user-level) y `.github/hooks/sooft.json` (repo-level, versionado).
+- Claude Code: bloque `hooks.SessionStart` mergeado en `.claude/settings.json` (sin pisar hooks propios del equipo).
+- `.github/copilot-instructions.md` + `.github/prompts/*.prompt.md` → custom instructions always-on y slash commands de la GUI de Copilot (REGLA DE NO PISAR: si ya existen, no los sobreescribas).
 
-Estos archivos son **stubs que delegan en las skills**; NO duplican la metodología. La fuente de verdad es siempre esta skill `sooft` y las que cita por nombre. En **Claude Code** los hooks se configuran por otro mecanismo (`settings.json`); no los instales acá.
+Estos archivos son **stubs que delegan en las skills**; NO duplican la metodología. La fuente de verdad es siempre esta skill `sooft` y las que cita por nombre. SOOFT funciona igual sin ningún hook nativo — la misma regla ya vive en las instrucciones always-on; el hook es solo un atajo determinista y gratuito en tokens.
 
 ---
 
