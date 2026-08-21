@@ -2,7 +2,7 @@
 
 ## Ticket / Requerimiento
 
-- el issue tracker: `INC-XXXXX` / `RITM-XXXXX` / `STRY-XXXXX` / `CHG-XXXXX` _(el que aplique)_
+- el issue tracker: `TICKET-XXXXX` _(el formato que use tu issue tracker)_
 
 ## Objetivo
 

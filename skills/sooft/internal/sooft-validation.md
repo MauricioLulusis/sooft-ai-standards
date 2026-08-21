@@ -60,16 +60,16 @@ Verificar cada ítem contra la skill `sooft` → `assets/policies/security-guide
 
 ### Git
 Verificar cada ítem contra la skill `sooft` → `assets/policies/git-guidelines.md`:
-- [ ] Nombre del branch sigue la convención: `feat/`, `fix/`, `docs/` o `chore/` + descripción kebab-case. Sin nombres vagos (`feature1`, `cambio`, `fix123`).
+- [ ] Nombre del branch sigue la convención `<tipo>/<slug>` (`feat/`, `fix/`, `security/` o `migration/`, según `type` de `.sooft/state.json`) + slug kebab-case, sin ticket embebido. Sin nombres vagos (`feature1`, `cambio`, `fix123`).
 - [ ] Todos los commits del branch cumplen Conventional Commits: `<tipo>(scope): descripción`. Tipos válidos: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `build`, `ci`, `perf`.
-- [ ] El PR apunta a `release/<version>`, no directamente a la rama principal (`master` / `main`).
+- [ ] El PR apunta al destino correcto según el modelo de branching real del proyecto (por defecto, la rama principal — PROHIBIDO asumir `release/<version>` u otro destino sin evidencia).
 - [ ] Si el PR supera 400 líneas: documentar justificación o dividir en PRs más pequeños.
 
 ### PR Template
 Verificar cada ítem contra la skill `sooft` → `assets/policies/pr-template-guidelines.md`:
 - [ ] El repo tiene `.github/pull_request_template.md`. Si no existe, instalarlo antes de abrir el PR.
 - [ ] La descripción del PR incluye **Objetivo** con contenido real (no el placeholder del template).
-- [ ] La descripción del PR incluye **Ticket el issue tracker** (`INC-`, `RITM-`, `STRY-` o `CHG-`).
+- [ ] La descripción del PR incluye **Ticket del issue tracker** (el formato que use el proyecto, ej. `TICKET-XXXXX`).
 - [ ] La descripción del PR incluye **Cambios Realizados** con al menos un ítem funcional o técnico real.
 - [ ] La descripción del PR incluye **Consideraciones para el Reviewer** con al menos un aspecto específico.
 - [ ] La descripción del PR incluye **Cómo Probar el Cambio** con precondiciones, pasos reproducibles y resultado esperado.
@@ -96,10 +96,10 @@ Bloqueante para el PR: sí / no
 - Comandos de validación del proyecto (linter, análisis de calidad / SAST) con errores o hallazgos altos/críticos.
 - **`SELF-REVIEW.md` ausente, incompleto o inconsistente** (ver "Consolidación de la autoevaluación" — reglas de trazabilidad y anti-gaming).
 - **`STATUS.md` ausente, incompleto o desincronizado de `state.json`** (RF-05 anti-drift). El chequeo se ejecuta como paso 0 del recurso `internal/sooft-code-review-gate.md`.
-- PR apuntando a la rama principal (`master` / `main`) en vez de `release/<version>`.
+- PR apuntando a un destino distinto del que use realmente el proyecto (sin evidencia de excepción).
 - Commits sin formato Conventional Commits.
 - Sección Objetivo del PR ausente o con solo el texto placeholder.
-- Sin número de ticket el issue tracker en el PR (`INC-`, `RITM-`, `STRY-` o `CHG-`).
+- Sin número de ticket del issue tracker en el PR.
 - Sin pasos para reproducir el cambio en el PR.
 - Sin indicación de impacto (alcance y nivel de riesgo) en el PR.
 
@@ -138,7 +138,7 @@ Validado por: qa-agent
 | PR apunta a release/         | OK     | release/0.2.0                |
 | PR Template instalado        | OK     | .github/pull_request_template.md |
 | PR: Objetivo                 | OK     |                              |
-| PR: Ticket el issue tracker        | OK     | STRY-12345                   |
+| PR: Ticket del issue tracker        | OK     | TICKET-12345                   |
 | PR: Cambios realizados       | OK     |                              |
 | PR: Pasos de validación      | OK     |                              |
 | PR: Impacto                  | OK     | Riesgo: Bajo · Backend       |

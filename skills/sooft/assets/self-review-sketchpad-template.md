@@ -21,7 +21,7 @@ Copiar al archivo `.sooft/self-review-scratchpad.md` y completar por cada tarea 
 ```markdown
 # Sketchpad de autoevaluación — <slug>
 
-- **Ticket:** <STRY-XXXXXXX / N/A>
+- **Ticket:** <TICKET-XXXXX / N/A>
 - **Type:** <feat | bug | security>
 - **PLAN:** <path al PLAN.md correspondiente>
 

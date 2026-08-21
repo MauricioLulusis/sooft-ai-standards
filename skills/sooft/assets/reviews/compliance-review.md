@@ -5,15 +5,16 @@ de que el MR sea mergeado. No revisa si el código es correcto — eso lo cubren
 `architecture-review.md`, `security-review.md` y `testing-review.md`. Acá el foco es: ¿se
 siguió el proceso completo? ¿todo lo que tiene que estar documentado, está documentado?
 
-Esta revisión la puede hacer cualquier persona del equipo con acceso al repositorio, a
-el issue tracker y a los artefactos SOOFT del proyecto.
+Esta revisión la puede hacer cualquier persona del equipo con acceso al repositorio, al
+issue tracker y a los artefactos SOOFT del proyecto.
 
 ---
 
 ## Trazabilidad al ticket
 
 - [ ] El MR tiene el número de ticket del issue tracker en el título o en la descripción, en el
-      formato estándar (INC-XXXXXX, RITM-XXXXXX, CHG-XXXXXX, REQ-XXXXXX).
+      formato que use el issue tracker del proyecto (ej. `TICKET-XXXXXX`) — no asumas un
+      formato sin evidencia de cuál usa el proyecto.
 - [ ] El ticket existe en el issue tracker y está en un estado activo (no cerrado, no cancelado).
       Si el ticket fue cerrado antes de que el MR se mergee, hay que reabrirlo o crear uno
       de seguimiento.
@@ -26,11 +27,12 @@ el issue tracker y a los artefactos SOOFT del proyecto.
 
 ## Artefactos SOOFT
 
-- [ ] La carpeta del trabajo existe en `docs/feats/{slug}/`, `docs/bugs/{slug}/` o
-      `docs/security/{slug}/` según `type`.
-- [ ] Features: `PRD.md` y `PLAN.md` existen; `SPEC.md` existe si el cambio era complejo.
+- [ ] La carpeta del trabajo existe en `docs/feats/{slug}/`, `docs/bugs/{slug}/`,
+      `docs/security/{slug}/` o `docs/migrations/{slug}/` según `type`.
+- [ ] Features: `PRD.md` y `PLAN.md` existen (salvo rigor LEAN/DIRECT, ver skill `sooft` §3.1); `SPEC.md` existe si el cambio era complejo.
 - [ ] Bugs: `BUG.md`, `ANALYSIS.md` y `FIX_PLAN.md` existen.
 - [ ] Seguridad: `FINDINGS.md` y `REMEDIATION_PLAN.md` existen.
+- [ ] Migraciones: `PLAN.md` existe.
 - [ ] `.sooft/evidence.md` existe y está completo, actualizado según el recurso `internal/sooft-evidence.md` de `sooft`.
 - [ ] `.sooft/state.json` tiene `phase` coherente con la máquina de estados de la skill `sooft` (§4) y el gate de plan
       de la rama está aprobado. Sin plan aprobado, el PR no puede mergearse.
@@ -39,7 +41,7 @@ Verificá que `state.json` tenga esta estructura mínima:
 
 ```json
 {
-  "ticket": "INC-XXXXXX",
+  "ticket": "TICKET-XXXXXX",
   "type": "bug",
   "phase": "REVIEW_DONE",
   "last_step": "approve-ia-code",
@@ -51,14 +53,14 @@ Verificá que `state.json` tenga esta estructura mínima:
 
 ## Nombre de la rama
 
-- [ ] La rama sigue la convención de nomenclatura de Sooft:
-  - Para incidentes: `fix/INC-XXXXXX-descripcion-corta`
-  - Para requerimientos: `feature/RITM-XXXXXX-descripcion-corta` o `feature/REQ-XXXXXX-descripcion-corta`
-  - Para cambios: `chore/CHG-XXXXXX-descripcion-corta`
-  - La descripción usa kebab-case, sin espacios, sin caracteres especiales, en minúsculas.
-- [ ] La rama parte de la rama base correcta según el tipo de cambio (habitualmente `develop`
-      o `main` según el gitflow del proyecto). Verificá que la rama no parte de otra feature
-      branch salvo que esté justificado.
+- [ ] La rama sigue la convención de SOOFT (skill `sooft`, worktree-first): `<tipo>/<slug>`,
+      donde `<tipo>` es `feat`, `fix`, `security` o `migration` según el `type` de
+      `.sooft/state.json`, y `<slug>` es una descripción corta en kebab-case (sin espacios, sin
+      caracteres especiales, en minúsculas, sin ticket embebido). El worktree correspondiente es
+      `.worktrees/<tipo>-<slug>`. La trazabilidad al ticket vive en
+      `.sooft/state.json.ticket`, no en el nombre de la rama.
+- [ ] La rama parte de la rama principal del proyecto actualizada. Verificá que no parte de otra
+      rama de trabajo salvo que esté justificado.
 
 ---
 
@@ -111,7 +113,7 @@ Verificá que `state.json` tenga esta estructura mínima:
   "status": "approved" | "rejected",
   "reviewed_by": "<legajo o nombre>",
   "reviewed_at": "<ISO 8601>",
-  "ticket": "<INC/RITM/CHG/REQ-XXXXXX>",
+  "ticket": "<TICKET-XXXXXX>",
   "ticket_status_in_tracker": "<estado del ticket al momento de la revisión>",
   "branch_name_ok": true | false,
   "mr_description_ok": true | false,

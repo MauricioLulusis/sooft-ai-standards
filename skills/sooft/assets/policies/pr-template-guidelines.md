@@ -25,7 +25,7 @@ El archivo listo para instalar en repos vive en `assets/templates/pull_request_t
 
 ## Ticket / Requerimiento
 
-- el issue tracker: `INC-XXXXX` / `RITM-XXXXX` / `STRY-XXXXX` / `CHG-XXXXX` _(el que aplique)_
+- el issue tracker: `TICKET-XXXXX` _(el formato que use tu issue tracker)_
 
 ## Objetivo
 
@@ -146,7 +146,7 @@ Un PR se considera completo si incluye todas estas secciones con contenido real 
 
 | Sección | Contenido mínimo esperado |
 |---|---|
-| Ticket / Requerimiento | Número de ticket el issue tracker (`INC-`, `RITM-`, `STRY-` o `CHG-`) |
+| Ticket / Requerimiento | Número de ticket del issue tracker, en el formato que use el proyecto (ej. `TICKET-XXXXX`) |
 | Objetivo | Descripción del problema que resuelve y resultado esperado |
 | Cambios Realizados | Al menos un ítem funcional o técnico con contenido real |
 | Consideraciones para el Reviewer | Al menos un aspecto que merece atención específica |
@@ -173,7 +173,7 @@ Si no se detecta → instalar el template corporativo en esa ruta. El template i
 Al validar un PR antes de abrirlo, verificar la presencia y contenido real de cada sección obligatoria. Reportar lo que falta:
 
 ```
-⚠️ No se encontró ticket el issue tracker asociado.
+⚠️ No se encontró ticket del issue tracker asociado.
 ⚠️ No se describieron pasos de validación.
 ⚠️ No se indicó impacto del cambio.
 ⚠️ No se adjuntó evidencia.
@@ -182,7 +182,7 @@ Al validar un PR antes de abrirlo, verificar la presencia y contenido real de ca
 ### Ítems bloqueantes (el PR no puede abrirse sin resolverlos)
 
 - Sección Objetivo ausente o con solo el texto placeholder.
-- Sin número de ticket el issue tracker asociado.
+- Sin número de ticket del issue tracker asociado.
 - Sin pasos para reproducir el cambio.
 - Sin indicación de impacto (alcance y nivel de riesgo).
 
@@ -200,6 +200,6 @@ Al validar un PR antes de abrirlo, verificar la presencia y contenido real de ca
 |---|---|---|
 | CA-01 | Un repositorio sin template de PR | Detectarlo durante el init e instalar el template corporativo |
 | CA-02 | Un repositorio con template incompleto | Detectarlo y señalar qué secciones faltan |
-| CA-03 | Un PR creado | Validar presencia de Objetivo, Ticket el issue tracker, Cambios, Pasos de validación, Impacto y Evidencia |
+| CA-03 | Un PR creado | Validar presencia de Objetivo, Ticket del issue tracker, Cambios, Pasos de validación, Impacto y Evidencia |
 | CA-04 | Un PR incompleto | Indicar exactamente qué información falta antes de abrir el PR |
 | CA-05 | Un reviewer | El template provee información suficiente para comprender el cambio, reproducirlo, evaluar riesgos y aprobar o rechazar con fundamento |

@@ -31,7 +31,7 @@ Copiar el bloque siguiente al archivo destino y completar. Reemplazar todos los 
 ```markdown
 # SELF-REVIEW — <slug>
 
-- **Ticket:** <STRY-XXXXXXX / INC-XXXXX / N/A si aplica>
+- **Ticket:** <TICKET-XXXXX / N/A si aplica>
 - **Rama:** <feat|fix|security>/<slug>
 - **Type:** <feat | bug | security>
 - **PLAN:** [PLAN.md](./PLAN.md)  <!-- feat → PLAN.md; bug → FIX_PLAN.md; security → REMEDIATION_PLAN.md -->

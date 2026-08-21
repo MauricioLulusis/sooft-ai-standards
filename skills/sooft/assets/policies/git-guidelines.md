@@ -46,10 +46,10 @@
 Cada commit incluye asunto, contexto y decisiones tomadas:
 
 ```
-feat(payments): agregar validación de formato de identificador de beneficiario
+feat(orders): agregar validación de formato de identificador de pedido
 
 Se valida que el identificador cumpla con el formato definido por la
-regla de negocio antes de persistir el pago. Se descartó validación
+regla de negocio antes de persistir el pedido. Se descartó validación
 client-side porque el servidor es la única fuente de verdad para el
 formato vigente. Incluye test unitario y actualización del contrato de
 error en docs/api.
@@ -76,35 +76,44 @@ siguen en verde.
 
 ## Estrategia de Branching SOOFT
 
+SOOFT es **worktree-first** (skill `sooft`, principio §1): cada trabajo vive aislado en su
+propio worktree y su propia rama, nunca se desarrolla sobre la rama compartida.
+
 ### Ramas
 
 | Rama | Propósito |
 |---|---|
-| `master` / `main` | Código estable listo para producción. PROHIBIDO desarrollar directamente sobre esta rama. |
-| `release/<version>` | Consolida cambios antes de integrarlos a la rama principal (ej: `release/0.1.0`, `release/1.0.0`). |
-| `feat/<descripción>`, `fix/<descripción>`, `docs/<descripción>`, `chore/<descripción>` | Ramas de trabajo. Se crean desde la rama principal con nombres descriptivos. |
+| `main` (o la rama principal que use el proyecto) | Código estable. PROHIBIDO desarrollar directamente sobre esta rama. |
+| `feat/<slug>`, `fix/<slug>`, `security/<slug>`, `migration/<slug>` | Ramas de trabajo, una por `type` de `.sooft/state.json` (`feat`, `bug`→`fix/`, `security`, `migration`). Viven en un worktree propio: `.worktrees/<tipo>-<slug>`. |
 
-### Convención de nombres para feature branches
+### Convención de nombres
 
-Correcto: `feat/cvu-validation`, `fix/token-expiration`, `docs/api-guide`
+`<slug>` es una descripción corta en kebab-case, sin ticket embebido — la trazabilidad al
+ticket vive en `.sooft/state.json.ticket` (ej. `TICKET-XXXXX`), no en el nombre de la rama.
+
+Correcto: `feat/orders-search-filter`, `fix/token-expiration`, `security/xss-header`, `migration/node-20-upgrade`
 
 PROHIBIDO: `feature1`, `cambio`, `prueba`, `fix123`
 
 ### Flujo de integración
 
 ```
-master / main
-  ↓ (crear branch)
-feat/* / fix/* / docs/* / chore/*
-  ↓ (Pull Request)
-rama de integración del equipo (develop, release/<version>, master, etc.)
+main (rama compartida)
+  ↓ git worktree add .worktrees/<tipo>-<slug> -b <tipo>/<slug>
+<tipo>/<slug>  (aislado en su worktree)
+  ↓ Pull Request, solo tras confirmación explícita del developer (skill sooft §4, regla 7)
+main
 ```
+
+Si el proyecto usa un modelo de branching distinto (rama de integración propia, `release/<version>`,
+etc.), seguí ESE modelo — PROHIBIDO asumir un destino fijo sin evidencia de cómo integra el proyecto
+(mismo criterio que "no asumas el issue tracker sin evidencia").
 
 ### Pasos obligatorios
 
-1. Crear branch desde la rama principal del proyecto (`master` o `main`) actualizada: `git checkout <rama-principal> && git pull && git checkout -b feat/<descripción>`.
+1. Crear el worktree y la rama desde la rama principal actualizada: `git worktree add .worktrees/<tipo>-<slug> -b <tipo>/<slug>` (ver skill `sooft` y el router correspondiente para el comando exacto por tipo).
 2. Crear commits.
-3. Abrir Pull Request contra la rama de integración que use el equipo. PROHIBIDO asumir un destino fijo sin conocer el modelo de branching del proyecto.
+3. Abrir Pull Request solo tras la confirmación explícita del developer, contra la rama principal del proyecto salvo que haya evidencia de que el proyecto usa otro destino.
 
 ---
 
@@ -116,7 +125,7 @@ rama de integración del equipo (develop, release/<version>, master, etc.)
 - OBLIGATORIO asociar el ticket correspondiente.
 - OBLIGATORIO que los tests estén ejecutados y en verde.
 - OBLIGATORIO identificar el impacto (cambios incompatibles, riesgo, dependencias afectadas).
-- OBLIGATORIO verificar que el destino del PR sea `release/<version>` y no la rama principal (`master` / `main`).
+- OBLIGATORIO verificar el destino del PR contra el modelo de branching real del proyecto (por defecto, la rama principal — PROHIBIDO asumir `release/<version>` u otro destino sin evidencia).
 - OBLIGATORIO que el PR permita revertir los cambios de forma segura.
 - ADVERTIR si el PR supera 400 líneas y recomendar división en PRs más pequeños.
 - ADVERTIR: Un unico cambio conceptual y autocontenido por PR.
@@ -202,5 +211,5 @@ OBLIGATORIO recomendar `git rebase -i` cuando la rama tenga commits desordenados
 | CA-05 | Un problema de historial Git | Explicar el uso de amend y rebase interactivo |
 | CA-06 | Un PR listo para integrarse | Recomendar Merge, Rebase o Squash según el contexto |
 | CA-07 | Una rama nueva a crear | Sugerir nombre descriptivo alineado al tipo de trabajo |
-| CA-08 | Un PR desde rama de trabajo | Validar que el destino sea `release/<version>`, no la rama principal (`master` / `main`) |
+| CA-08 | Un PR desde rama de trabajo | Validar el destino contra el modelo de branching real del proyecto (por defecto, la rama principal), nunca asumir `release/<version>` sin evidencia |
 | CA-09 | Un conjunto de commits desordenados | Sugerir limpieza mediante rebase interactivo |

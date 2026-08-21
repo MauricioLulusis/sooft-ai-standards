@@ -76,7 +76,7 @@ entorno, ticket INC/RITM si hay), documentá `docs/bugs/{slug}/BUG.md`:
 - **Versión/commit:** ...
 - **Usuarios afectados:** ...
 - **Severidad:** crítica | alta | media | baja
-- **Ticket el issue tracker:** INC-XXXXX | N/A
+- **Ticket del issue tracker:** TICKET-XXXXX | N/A
 
 ## Logs / Evidencia
 [Stack traces, logs relevantes, capturas]
