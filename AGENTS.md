@@ -210,7 +210,7 @@ Al inicio de cada sesión leés `.sooft/PRINCIPLES.md` si existe: son los princi
 {
   "phase": "PLAN_APPROVED",
   "ticket": "TICKET-XXXXX",
-  "owner": "<email o legajo del developer>",
+  "owner": "<apellido del developer si está disponible, sino null — NUNCA el email>",
   "created_at": "2026-05-29",
   "last_step": "approve-plan",
   "next_step": "implement"

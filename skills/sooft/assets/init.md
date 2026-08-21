@@ -193,7 +193,7 @@ Con toda la información recolectada, escribí los dos archivos.
 {
   "phase": "IDLE",
   "ticket": null,
-  "owner": "<email del developer si está disponible, sino null>",
+  "owner": "<apellido del developer si está disponible, sino null — NUNCA el email>",
   "created_at": "<fecha de hoy ISO 8601>",
   "last_step": "init",
   "next_step": null,

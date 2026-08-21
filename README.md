@@ -246,7 +246,7 @@ Formato del archivo:
   "phase": "VALIDATING",
   "type": "feat",
   "ticket": "TICKET-XXXXX",
-  "owner": "<email o legajo del developer>",
+  "owner": "<apellido del developer si está disponible, sino null — NUNCA el email>",
   "created_at": "2026-06-02",
   "last_step": "implement",
   "next_step": "run-validations"
